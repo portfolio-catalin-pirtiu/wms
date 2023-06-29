@@ -36,3 +36,8 @@
     transform: rotate(360deg);
   }
 }
+
+.navbar-icon {
+  color: hsl(200, 100%, 50%);
+  scale: 1.6;
+}
