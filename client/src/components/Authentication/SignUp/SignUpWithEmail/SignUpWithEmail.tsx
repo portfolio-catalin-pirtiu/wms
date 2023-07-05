@@ -1,49 +1,105 @@
-import Form from "react-bootstrap/Form";
-import Container from "react-bootstrap/Container";
-import Button from "react-bootstrap/Button";
-import InputGroup from "react-bootstrap/InputGroup";
-import { object, string } from "yup";
-import { Formik, FormikValues } from "formik";
+import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import { object, string } from 'yup';
+import { Formik, FormikValues } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import Message from '../../../common/Message/Message';
+import { DatabaseUser } from '../../../../types/types';
 
 const userSchema = object().shape({
-  organizationName: string().required("Required"),
-  email: string().email("Invalid email address").required("Required"),
-  password: string().required("Required"),
+  name: string().required('Required'),
+  email: string().email('Invalid email address').required('Required'),
+  password: string().required('Required'),
   address1: string(),
   address2: string(),
   city: string(),
   county: string(),
-  country: string()
+  country: string(),
 });
 
 export default function SignUpWithEmail() {
-  function submitForm(values: FormikValues) {
-    console.log("form submit event", values);
-    fetch("http://localhost:4000/authentication/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(values)
-    })
-      .then(response => response.json())
-      .then(data => console.log(data))
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
+  const initialFormValues = useRef({
+    name: '',
+    email: '',
+    password: '',
+    address1: '',
+    address2: '',
+    city: '',
+    county: '',
+    country: '',
+    postcode: '',
+  } as DatabaseUser);
+  const localStorageSignUpFormKey = 'signUpFormData';
+
+  useEffect(() => {
+    // get local storage data if it exists
+    const localStorageSignUpFormData = getFromLocalStorage(
+      localStorageSignUpFormKey
+    );
+
+    if ('name' in localStorageSignUpFormData) {
+      console.log('useEffect -> assign initial values');
+      initialFormValues.current = Object.assign({}, localStorageSignUpFormData);
+    }
+    console.log('local storage get item', initialFormValues.current);
+  }, [errorMessage]);
+
+  function getFromLocalStorage(key: string): DatabaseUser {
+    const localStorageData = localStorage.getItem(key);
+
+    if (typeof localStorageData === 'string') {
+      const data: DatabaseUser = JSON.parse(localStorageData);
+      return data;
+    }
+    return {
+      name: '',
+      email: '',
+      password: '',
+      address1: '',
+      address2: '',
+      city: '',
+      county: '',
+      country: '',
+      postcode: '',
+    } as DatabaseUser;
   }
 
-  return (
+  function submitForm(values: FormikValues) {
+    fetch('http://localhost:4000/authentication/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    })
+      .then((response) => {
+        if (response.ok) {
+          localStorage.removeItem(localStorageSignUpFormKey);
+          navigate('/authentication');
+        } else {
+          throw new Error(response.statusText);
+        }
+      })
+      .catch((error) => {
+        localStorage.setItem(localStorageSignUpFormKey, JSON.stringify(values));
+        if (error instanceof Error) {
+          setErrorMessage(error.message);
+        } else if (typeof error === 'string') {
+          setErrorMessage(error);
+        }
+      });
+  }
+
+  let formContent = (
     <Formik
       validationSchema={userSchema}
       onSubmit={submitForm}
-      initialValues={{
-        organizationName: "",
-        email: "",
-        password: "",
-        address1: "",
-        address2: "",
-        city: "",
-        county: "",
-        country: ""
-      }}
+      initialValues={initialFormValues.current}
     >
       {({ handleSubmit, handleChange, values, touched, errors }) => (
         <Container className="my-5">
@@ -55,23 +111,19 @@ export default function SignUpWithEmail() {
                   Organization Name
                 </InputGroup.Text>
                 <Form.Control
-                  name="organizationName"
+                  name="name"
                   type="text"
                   autoComplete="on"
-                  value={values.organizationName}
+                  value={values.name}
                   onChange={handleChange}
-                  isValid={touched.organizationName && !errors.organizationName}
-                  isInvalid={!!errors.organizationName}
+                  isValid={touched.name && !errors.name}
+                  isInvalid={!!errors.name}
                   placeholder="Required"
                   aria-label="Required"
                   aria-describedby="organization-name"
                 />
-                <Form.Control.Feedback
-                  type={errors.organizationName ? "invalid" : "valid"}
-                >
-                  {errors.organizationName
-                    ? errors.organizationName
-                    : "Looks Good!"}
+                <Form.Control.Feedback type={errors.name ? 'invalid' : 'valid'}>
+                  {errors.name ? errors.name : 'Looks Good!'}
                 </Form.Control.Feedback>
               </InputGroup>
 
@@ -84,14 +136,15 @@ export default function SignUpWithEmail() {
                   placeholder="Required"
                   aria-label="Required"
                   aria-describedby="email"
+                  value={values.email}
                   onChange={handleChange}
                   isValid={touched.email && !errors.email}
                   isInvalid={!!errors.email}
                 />
                 <Form.Control.Feedback
-                  type={errors.email ? "invalid" : "valid"}
+                  type={errors.email ? 'invalid' : 'valid'}
                 >
-                  {errors.email ? errors.email : "Looks Good!"}
+                  {errors.email ? errors.email : 'Looks Good!'}
                 </Form.Control.Feedback>
               </InputGroup>
 
@@ -104,14 +157,15 @@ export default function SignUpWithEmail() {
                   placeholder="Required"
                   aria-label="Required"
                   aria-describedby="password"
+                  value={values.password}
                   onChange={handleChange}
                   isValid={touched.password && !errors.password}
                   isInvalid={!!errors.password}
                 />
                 <Form.Control.Feedback
-                  type={errors.password ? "invalid" : "valid"}
+                  type={errors.password ? 'invalid' : 'valid'}
                 >
-                  {errors.password ? errors.password : "Looks good!"}
+                  {errors.password ? errors.password : 'Looks good!'}
                 </Form.Control.Feedback>
               </InputGroup>
 
@@ -123,6 +177,7 @@ export default function SignUpWithEmail() {
                     type="address"
                     name="address1"
                     autoComplete="on"
+                    value={values.address1}
                     placeholder="Address 1"
                     onChange={handleChange}
                   ></Form.Control>
@@ -133,6 +188,7 @@ export default function SignUpWithEmail() {
                     type="text"
                     name="address2"
                     autoComplete="on"
+                    value={values.address2}
                     placeholder="Address 2"
                     onChange={handleChange}
                   ></Form.Control>
@@ -144,6 +200,7 @@ export default function SignUpWithEmail() {
                     name="city"
                     autoComplete="on"
                     placeholder="City"
+                    value={values.city}
                     onChange={handleChange}
                   ></Form.Control>
                 </Form.Group>
@@ -154,6 +211,7 @@ export default function SignUpWithEmail() {
                     name="county"
                     autoComplete="on"
                     placeholder="County"
+                    value={values.county}
                     onChange={handleChange}
                   ></Form.Control>
                 </Form.Group>
@@ -164,6 +222,7 @@ export default function SignUpWithEmail() {
                     name="country"
                     autoComplete="country-name"
                     placeholder="Country"
+                    value={values.country}
                     onChange={handleChange}
                   ></Form.Control>
                 </Form.Group>
@@ -174,6 +233,7 @@ export default function SignUpWithEmail() {
                     name="postcode"
                     autoComplete="postal-code"
                     placeholder="Postcode"
+                    value={values.postcode}
                     onChange={handleChange}
                   ></Form.Control>
                 </Form.Group>
@@ -187,5 +247,14 @@ export default function SignUpWithEmail() {
         </Container>
       )}
     </Formik>
+  );
+
+  return !!errorMessage ? (
+    <>
+      <Message error={errorMessage} />
+      {formContent}
+    </>
+  ) : (
+    <>{formContent}</>
   );
 }

@@ -1,41 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
-import "bootstrap/dist/css/bootstrap.min.css";
-import NavBar from './components/NavBar/NavBar';
-import {Routes, Route} from "react-router-dom";
-import Dashboard from './components/Dashboard/Dashboard';
-import Inventory from './components/Inventory/Inventory';
-import AddProduct from './components/Inventory/AddProduct';
-import UploadInventory from './components/Inventory/UploadInventory';
-import DownloadInventory from './components/Inventory/DownloadInventory';
-import Reports from './components/Reports/Reports';
-import Settings from './components/Settings/Settings';
-import Logout from './components/Logout/Logout';
-import Home from './components/Home/Home';
-import Authentication from './components/Authentication/Authentication';
-import SignUpWithEmail from './components/Authentication/SignUp/SignUpWithEmail/SignUpWithEmail';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import NavLoggedIn from './components/NavBar/NavLoggedIn';
+import NavPublic from './components/NavBar/NavPublic';
+import AppRoutes from './routes/AppRoutes';
+import Message from './components/common/Message/Message';
+import { AuthenticationContext } from './context/AuthenticationProvider';
+import { LoggedInUser } from './types/types';
 
 function App() {
-  return (
+  const { user, setUser } = useContext(AuthenticationContext);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loggedInUserFetchCount, setLoggedInUserFetchCount] = useState(0);
+  const navigate = useNavigate();
+  // console.log('app component -> userContext', user);
+
+  const fetchUserLoginDetails = useCallback(async () => {
+    try {
+      const response = await fetch(
+        'http://localhost:4000/authentication/status',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        }
+      );
+
+      if (response.ok) {
+        console.log('app component -> true');
+        const loggedInUser: LoggedInUser = await response.json();
+        setUser(loggedInUser);
+      } else {
+        console.log('app component -> false');
+        const noUser: LoggedInUser = await response.json();
+        setUser(noUser);
+        localStorage.removeItem('loggedInUser');
+        navigate('/authentication/login');
+      }
+    } catch (exception) {
+      if (exception instanceof Error) {
+        setErrorMessage(exception.message);
+      } else if (typeof exception === 'string') {
+        setErrorMessage(exception);
+      }
+    }
+  }, [setUser, navigate]);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      setLoggedInUserFetchCount(loggedInUserFetchCount + 1);
+    }, 10000);
+
+    return () => clearTimeout(timeOutId);
+  }, [loggedInUserFetchCount]);
+
+  useEffect(() => {
+    fetchUserLoginDetails();
+  }, [loggedInUserFetchCount, fetchUserLoginDetails]);
+
+  return user.isLoggedIn ? (
     <>
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/dashboard" element={<Dashboard/>}/>
-        <Route path="/inventory">
-          <Route path="" element={<Inventory/>}/>
-          <Route path="new" element={<AddProduct/>}/>
-          <Route path="upload" element={<UploadInventory/>}/>
-          <Route path="download" element={<DownloadInventory/>}/>
-        </Route>
-        <Route path="/authentication">
-          <Route path="" element={<Authentication/>}/>
-          <Route path="signup/email" element={<SignUpWithEmail/>}/>
-        </Route>
-        <Route path="/logout" element={<Logout/>}/>
-        <Route path="/reports" element={<Reports/>}/>
-        <Route path="/settings" element={<Settings/>}/>
-      </Routes>
+      <NavLoggedIn />
+      <Message error={errorMessage} />
+      <AppRoutes />
+    </>
+  ) : (
+    <>
+      <NavPublic />
+      <AppRoutes />
     </>
   );
 }

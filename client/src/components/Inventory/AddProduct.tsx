@@ -1,5 +1,3 @@
-import { ReactElement } from "react"
-
 export default function AddProduct() {
   interface TestProps {
     text: string,
