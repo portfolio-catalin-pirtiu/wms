@@ -2,19 +2,29 @@ import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import NavLoggedIn from './components/NavBar/NavLoggedIn';
+import NavPrivate from './components/NavBar/NavPrivate';
 import NavPublic from './components/NavBar/NavPublic';
 import AppRoutes from './routes/AppRoutes';
 import Message from './components/common/Message/Message';
 import { AuthenticationContext } from './context/AuthenticationProvider';
 import { LoggedInUser } from './types/types';
 
+interface Warning {
+  message: string;
+}
+
+class Warning {
+  constructor(message: string) {
+    this.message = message;
+  }
+}
+
 function App() {
   const { user, setUser } = useContext(AuthenticationContext);
   const [errorMessage, setErrorMessage] = useState('');
+  const [warningMessage, setWarningMessage] = useState('');
   const [loggedInUserFetchCount, setLoggedInUserFetchCount] = useState(0);
   const navigate = useNavigate();
-  // console.log('app component -> userContext', user);
 
   const fetchUserLoginDetails = useCallback(async () => {
     try {
@@ -29,30 +39,40 @@ function App() {
         }
       );
 
+      // console.log('app component -> outside if statement');
+      // console.log('app component -> user', user);
       if (response.ok) {
-        console.log('app component -> true');
+        // console.log('app component -> true');
         const loggedInUser: LoggedInUser = await response.json();
         setUser(loggedInUser);
-      } else {
-        console.log('app component -> false');
+      } else if (user.isLoggedIn) {
+        // console.log('app component -> false 1');
         const noUser: LoggedInUser = await response.json();
         setUser(noUser);
         localStorage.removeItem('loggedInUser');
         navigate('/authentication/login');
+        throw new Warning('session expired - you have been logged out');
       }
     } catch (exception) {
+      // console.log('catch statement');
       if (exception instanceof Error) {
         setErrorMessage(exception.message);
+      } else if (exception instanceof Warning) {
+        setWarningMessage('logged out');
       } else if (typeof exception === 'string') {
         setErrorMessage(exception);
       }
+    } finally {
+      // console.log('finally statement');
+      setErrorMessage('');
+      setWarningMessage('');
     }
-  }, [setUser, navigate]);
+  }, [user.isLoggedIn, setUser, navigate]);
 
   useEffect(() => {
     const timeOutId = setTimeout(() => {
       setLoggedInUserFetchCount(loggedInUserFetchCount + 1);
-    }, 10000);
+    }, 15000);
 
     return () => clearTimeout(timeOutId);
   }, [loggedInUserFetchCount]);
@@ -63,14 +83,15 @@ function App() {
 
   return user.isLoggedIn ? (
     <>
-      <NavLoggedIn />
-      <Message error={errorMessage} />
+      <NavPrivate />
       <AppRoutes />
+      <Message error={errorMessage} warning={warningMessage} />
     </>
   ) : (
     <>
       <NavPublic />
       <AppRoutes />
+      <Message error={errorMessage} warning={warningMessage} />
     </>
   );
 }

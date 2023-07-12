@@ -36,7 +36,7 @@ export default function Login() {
       );
 
       if (response.ok) {
-        console.log('Login component -> if statement -> true');
+        // console.log('Login component -> if statement -> true');
         const loggedInUser: LoggedInUser = await response.json();
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
         setUser(loggedInUser);

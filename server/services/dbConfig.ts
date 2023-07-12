@@ -4,4 +4,5 @@ const dbConfig = {
   password: process.env.DATABASE_PASSWORD,
   database: 'wms',
 };
+
 export default dbConfig;

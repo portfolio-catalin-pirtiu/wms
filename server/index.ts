@@ -6,6 +6,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import authenticationRouter from './routes/authentication.js';
 import dashboardRouter from './routes/dashboard.js';
+import userAccountRouter from './routes/userAccount.js';
 import './routes/middleware/passport-config.mw.js';
 // the above middleware is a side effect call;
 // it means that it will be called immediately
@@ -29,8 +30,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      // maxAge: 4 * 3600 * 1000, // 4 hours
-      maxAge: 10000
+      maxAge: 4 * 3600 * 1000, // 4 hours
+      // maxAge: 10000
     },
   })
 );
@@ -40,5 +41,7 @@ app.use(passport.session());
 
 app.use('/authentication', authenticationRouter);
 app.use('/dashboard', dashboardRouter);
+app.use('/user', userAccountRouter);
 
+console.log('index.ts -> mongoStore URL', process.env.MONGO_STORE_WMS_URL)
 app.listen(process.env.PORT || 4000, () => console.log('Server Running'));

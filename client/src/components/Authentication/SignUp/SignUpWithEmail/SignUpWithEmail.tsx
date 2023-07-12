@@ -18,6 +18,7 @@ const userSchema = object().shape({
   city: string(),
   county: string(),
   country: string(),
+  postcode: string(),
 });
 
 export default function SignUpWithEmail() {

@@ -9,7 +9,6 @@ import { useContext } from 'react';
 
 export default function NavLoggedIn() {
   const {user} = useContext(AuthenticationContext);
-
   return (
     <>
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -40,8 +39,8 @@ export default function NavLoggedIn() {
           </Nav>
           <Nav>
             <NavDropdown title={user.name} id="collapsible-nav-dropdown">
-              <NavDropdown.Item as={Link} to="/user/settings">
-                Settings
+              <NavDropdown.Item as={Link} to="/user/account">
+                Account
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/user/logout">
                 Logout
