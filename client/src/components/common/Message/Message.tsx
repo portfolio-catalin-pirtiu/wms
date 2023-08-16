@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { FaThumbsUp } from 'react-icons/fa';
-import { FaThumbsDown } from 'react-icons/fa';
-import {BsShieldLockFill} from 'react-icons/bs'
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 
 interface CommunicationMessage {
   success?: string;
@@ -9,22 +8,24 @@ interface CommunicationMessage {
   warning?: string;
 }
 
-export default function Message({ success, error, warning }: CommunicationMessage) {
-  const [isError, setIsError] = useState(error ? true : false);
+export default function Message({
+  success,
+  error,
+  warning,
+}: CommunicationMessage) {
+  const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(success ? true : false);
   const [isWarning, setIsWarning] = useState(warning ? true : false);
 
   useEffect(() => {
     if (error) {
-      const timeOutId = setTimeout(() => {
-        setIsError(false);
-      }, 2000);
-      return () => clearTimeout(timeOutId);
+      setIsError(true);
     }
   }, [error]);
 
   useEffect(() => {
     if (success) {
+      setIsSuccess(true);
       const timeOutId = setTimeout(() => {
         setIsSuccess(false);
       }, 2000);
@@ -34,6 +35,7 @@ export default function Message({ success, error, warning }: CommunicationMessag
 
   useEffect(() => {
     if (warning) {
+      setIsWarning(true);
       const timeOutId = setTimeout(() => {
         setIsWarning(false);
       }, 2000);
@@ -41,28 +43,37 @@ export default function Message({ success, error, warning }: CommunicationMessag
     }
   }, [warning]);
 
-  const successTemplate = (
-    <div className="success-container">
-      <FaThumbsUp /> {success}
-    </div>
+  const errorTemplate = (
+    <Alert show={isError} variant="danger">
+      <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+      <p>{error}</p>
+      <hr />
+      <div className="d-flex justify-content-end">
+        <Button variant="outline-danger" onClick={() => setIsError(false)}>
+          Close
+        </Button>
+      </div>
+    </Alert>
   );
 
-  const errorTemplate = (
-    <div className="error-container">
-      <FaThumbsDown /> {error}
-    </div>
+  const successTemplate = (
+    <Alert show={isSuccess} variant='success'>
+      <Alert.Heading>Success</Alert.Heading>
+      <p>{success}</p>
+    </Alert>
   );
 
   const warningTemplate = (
-    <div className="warning-container">
-      <BsShieldLockFill /> {warning}
-    </div>
+    <Alert show={isWarning} variant='warning'>
+      <Alert.Heading>Warning</Alert.Heading>
+      <p>{warning}</p>
+    </Alert>
   );
 
   return (
     <h6>
-      {isSuccess && successTemplate}
       {isError && errorTemplate}
+      {isSuccess && successTemplate}
       {isWarning && warningTemplate}
     </h6>
   );

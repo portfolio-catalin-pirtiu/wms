@@ -6,8 +6,10 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import authenticationRouter from './routes/authentication.js';
 import dashboardRouter from './routes/dashboard.js';
-import userAccountRouter from './routes/userAccount.js';
+import userRouter from './routes/user.js';
+import inventoryRouter from './routes/inventory/inventory.js';
 import './routes/middleware/passport-config.mw.js';
+import './routes/middleware/google.config.mw.js';
 // the above middleware is a side effect call;
 // it means that it will be called immediately
 // this is necessary for the passport.use(LocalStrategy)
@@ -41,7 +43,7 @@ app.use(passport.session());
 
 app.use('/authentication', authenticationRouter);
 app.use('/dashboard', dashboardRouter);
-app.use('/user', userAccountRouter);
+app.use('/user', userRouter);
+app.use('/inventory', inventoryRouter);
 
-console.log('index.ts -> mongoStore URL', process.env.MONGO_STORE_WMS_URL)
 app.listen(process.env.PORT || 4000, () => console.log('Server Running'));

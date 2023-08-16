@@ -30,3 +30,16 @@ export interface ReqUser extends Request {
     postcode?: string;
   };
 }
+
+export interface Warehouse {
+  id?: number;
+  owner: number;
+  name: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  county?: string;
+  country?: string;
+  row?: string;
+  row_section?: string;
+}

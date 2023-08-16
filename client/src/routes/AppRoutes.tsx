@@ -3,9 +3,9 @@ import { useContext } from 'react';
 import { AuthenticationContext } from '../context/AuthenticationProvider';
 import Dashboard from '../components/Dashboard/Dashboard';
 import Inventory from '../components/Inventory/Inventory';
-import AddProduct from '../components/Inventory/AddProduct';
-import UploadInventory from '../components/Inventory/UploadInventory';
-import DownloadInventory from '../components/Inventory/DownloadInventory';
+import AddProduct from '../components/Inventory/Toolbar/AddProduct/AddProduct';
+import UploadInventory from '../components/Inventory/Toolbar/UploadInventory/UploadInventory';
+import DownloadInventory from '../components/Inventory/Toolbar/DownloadInventory/DownloadInventory';
 import Reports from '../components/Reports/Reports';
 import UserAccount from '../components/UserAccount/UserAccount';
 import Logout from '../components/Logout/Logout';
@@ -49,15 +49,22 @@ export default function AppRoutes() {
         <Route path="download" element={<DownloadInventory />} />
       </Route>
       <Route
-        path="/authentication"
+        path="/authentication/*"
         element={
-          user.isLoggedIn ? <Navigate to={'/dashboard'} /> : <Authentication />
+          user.isLoggedIn ? (
+            <Navigate to={'/dashboard'} />
+          ) : (
+            <Routes>
+              <Route>
+                <Route path="/" element={<Authentication />} />
+                <Route path="signup" element={<SignUp />} />
+                <Route path="login" element={<Login />} />
+                <Route path="signup/email" element={<SignUpWithEmail />} />
+              </Route>
+            </Routes>
+          )
         }
-      >
-        <Route path="signup" element={<SignUp />} />
-        <Route path="login" element={<Login/>} />
-        <Route path="signup/email" element={<SignUpWithEmail />} />
-      </Route>
+      ></Route>
       <Route
         path="/reports"
         element={

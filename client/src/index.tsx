@@ -5,21 +5,20 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthenticationProvider } from './context/AuthenticationProvider';
+import { CommunicationProvider } from './context/CommunicationsProvider';
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById('root') as HTMLElement,
 );
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthenticationProvider>
-        <App />
-      </AuthenticationProvider>
+      <CommunicationProvider>
+        <AuthenticationProvider>
+          <App />
+        </AuthenticationProvider>
+      </CommunicationProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

@@ -9,6 +9,7 @@ import { LoggedInUser } from '../../../types/types';
 import { useContext } from 'react';
 import { AuthenticationContext } from '../../../context/AuthenticationProvider';
 
+
 const loginSchema = object().shape({
   email: string().email('Invalid email address').required('Required'),
   password: string().required('Required'),
@@ -17,8 +18,8 @@ const loginSchema = object().shape({
 export default function Login() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
-  const {setUser} = useContext(AuthenticationContext);
-  
+  const { setUser } = useContext(AuthenticationContext);
+
   async function submitForm(values: FormikValues) {
     // fetch request must have credentials: 'include' so that the cookies can be set
     // also check note on the server side: index.ts -> cors middleware
@@ -36,7 +37,6 @@ export default function Login() {
       );
 
       if (response.ok) {
-        // console.log('Login component -> if statement -> true');
         const loggedInUser: LoggedInUser = await response.json();
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
         setUser(loggedInUser);

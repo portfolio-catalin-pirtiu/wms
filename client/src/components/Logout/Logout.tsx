@@ -20,11 +20,10 @@ export default function Logout() {
               'Content-Type': 'application/json',
             },
             credentials: 'include',
-          }
+          },
         );
 
         if (logoutStatus.ok) {
-          console.log('logout component -> ok');
           const noUser: LoggedInUser = await logoutStatus.json();
           setUser(noUser);
         } else {

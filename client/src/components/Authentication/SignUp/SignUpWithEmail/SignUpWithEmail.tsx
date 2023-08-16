@@ -44,10 +44,8 @@ export default function SignUpWithEmail() {
     );
 
     if ('name' in localStorageSignUpFormData) {
-      console.log('useEffect -> assign initial values');
       initialFormValues.current = Object.assign({}, localStorageSignUpFormData);
     }
-    console.log('local storage get item', initialFormValues.current);
   }, [errorMessage]);
 
   function getFromLocalStorage(key: string): DatabaseUser {

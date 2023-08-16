@@ -18,7 +18,6 @@ class Warning {
     this.message = message;
   }
 }
-
 function App() {
   const { user, setUser } = useContext(AuthenticationContext);
   const [errorMessage, setErrorMessage] = useState('');
@@ -36,17 +35,13 @@ function App() {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-        }
+        },
       );
 
-      // console.log('app component -> outside if statement');
-      // console.log('app component -> user', user);
       if (response.ok) {
-        // console.log('app component -> true');
         const loggedInUser: LoggedInUser = await response.json();
         setUser(loggedInUser);
       } else if (user.isLoggedIn) {
-        // console.log('app component -> false 1');
         const noUser: LoggedInUser = await response.json();
         setUser(noUser);
         localStorage.removeItem('loggedInUser');
@@ -54,7 +49,6 @@ function App() {
         throw new Warning('session expired - you have been logged out');
       }
     } catch (exception) {
-      // console.log('catch statement');
       if (exception instanceof Error) {
         setErrorMessage(exception.message);
       } else if (exception instanceof Warning) {
@@ -63,7 +57,6 @@ function App() {
         setErrorMessage(exception);
       }
     } finally {
-      // console.log('finally statement');
       setErrorMessage('');
       setWarningMessage('');
     }

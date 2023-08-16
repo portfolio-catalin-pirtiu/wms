@@ -22,8 +22,6 @@ function loadLocalStorage(): LoggedInUser {
   } else {
     return {
       isLoggedIn: false,
-      name: '',
-      email: '',
     };
   }
 }
