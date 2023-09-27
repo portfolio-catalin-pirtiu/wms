@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
+import { useEffect, useState, useContext, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavPrivate from './components/NavBar/NavPrivate';
 import NavPublic from './components/NavBar/NavPublic';

@@ -68,7 +68,6 @@ export default function UserAccount() {
   const handleEditingOff = () => setIsEditing(false);
 
   async function handleEditFormSubmit(values: FormikValues) {
-    console.log('handle edit form submit -> values', values);
     handleEditingOff();
     setUserAccount({
       ...values,

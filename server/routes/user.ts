@@ -63,10 +63,6 @@ router.post('/passwordChange', async (req: ReqUser, res: Response) => {
       db.query(
         selectPasswordQuery,
         (error, [{ password }]: [CurrentPassword]) => {
-          console.log(
-            'selectPasswordFunction -> selectPasswordQuery',
-            selectPasswordQuery
-          );
           if (error) {
             return reject(error);
           }

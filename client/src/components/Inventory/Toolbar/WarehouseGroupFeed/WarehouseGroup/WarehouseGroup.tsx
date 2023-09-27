@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import AddWarehouse from './AddWarehouse/AddWarehouse';
 import WarehouseDropdown from './WarehouseDropdown/WarehouseDropdown';
-import { Warehouse, WarehouseProps } from '../../../../../types/types';
+import { WarehouseProps } from '../../../../../types/types';
 import EditWarehouses from './EditWarehouses/EditWarehouses';
 
 export default function WarehouseGroup({

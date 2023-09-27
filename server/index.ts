@@ -9,7 +9,6 @@ import dashboardRouter from './routes/dashboard.js';
 import userRouter from './routes/user.js';
 import inventoryRouter from './routes/inventory/inventory.js';
 import './routes/middleware/passport-config.mw.js';
-import './routes/middleware/google.config.mw.js';
 // the above middleware is a side effect call;
 // it means that it will be called immediately
 // this is necessary for the passport.use(LocalStrategy)
@@ -46,4 +45,4 @@ app.use('/dashboard', dashboardRouter);
 app.use('/user', userRouter);
 app.use('/inventory', inventoryRouter);
 
-app.listen(process.env.PORT || 4000, () => console.log('Server Running'));
+app.listen(process.env.PORT || 4000);

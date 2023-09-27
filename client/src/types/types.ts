@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
 export interface DatabaseUser {
   id?: number;
   name: string;
@@ -40,7 +39,6 @@ export interface Warehouse {
 
 export interface WarehouseGroupProps {
   warehouses: Warehouse[];
-  // handleUpdateWarehouses: Dispatch<SetStateAction<Warehouse[]>>
   handleUpdateWarehouses: (warehouses: Warehouse[]) => void;
 }
 

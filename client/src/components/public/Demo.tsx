@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import Alma from './Alma';
 
 export default function Demo() {

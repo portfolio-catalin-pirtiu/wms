@@ -1,11 +1,10 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Formik, FormikValues } from 'formik';
 import useWarehouses from '../../../../../../customHooks/useWarehouses';
-import { Warehouse, WarehouseProps } from '../../../../../../types/types';
 
 export default function EditWarehouses() {
   const [show, setShow] = useState(false);

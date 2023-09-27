@@ -10,12 +10,6 @@ const router = express.Router();
 router.post('/users', async (req: Request, res: Response) => {
   // post a new user
   const db = mysql.createConnection(dbConfig);
-  db.connect((error) => {
-    if (error) {
-      console.log('Error connecting to DB', error.message);
-    }
-    console.log('Connected to MySQL DB');
-  });
 
   const {
     name,
@@ -30,7 +24,7 @@ router.post('/users', async (req: Request, res: Response) => {
   }: SignUpWithEmailUser = req.body as SignUpWithEmailUser;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const sqlQuery = `INSERT INTO users (name, email, password, address_1, address_2, city, county, country, postcode) 
+  const sqlQuery = `INSERT INTO users (name, email, password, address1, address2, city, county, country, postcode) 
     VALUES (
       "${name}", 
       "${email}", 
@@ -97,10 +91,4 @@ router.post('/logout', (req: ReqUser, res: Response) => {
   });
 });
 
-// router.post('/google', async (req: ReqUser, res: Response) => {
-// });
-
-// router.post('/test', (req: ReqUser, res: Response) => {
-//   console.log('auth test route -> body', req.body);
-// });
 export default router;

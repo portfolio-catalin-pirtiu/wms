@@ -9,7 +9,6 @@ import { LoggedInUser } from '../../../types/types';
 import { useContext } from 'react';
 import { AuthenticationContext } from '../../../context/AuthenticationProvider';
 
-
 const loginSchema = object().shape({
   email: string().email('Invalid email address').required('Required'),
   password: string().required('Required'),
@@ -33,7 +32,7 @@ export default function Login() {
           },
           credentials: 'include',
           body: JSON.stringify(values),
-        }
+        },
       );
 
       if (response.ok) {
