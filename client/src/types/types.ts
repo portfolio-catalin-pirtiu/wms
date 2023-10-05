@@ -33,6 +33,7 @@ export interface Warehouse {
   city?: string;
   county?: string;
   country?: string;
+  postcode?: string;
   row?: string;
   row_section?: string;
 }
@@ -43,6 +44,6 @@ export interface WarehouseGroupProps {
 }
 
 export interface WarehouseProps {
-  value: Warehouse[];
-  onChange: (warehouses: Warehouse[]) => void;
+  warehouses: Warehouse[];
+  setWarehouses: (warehouses: Warehouse[]) => void;
 }

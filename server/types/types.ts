@@ -13,8 +13,8 @@ export interface SignUpWithEmailUser {
 }
 
 export interface DatabaseUser extends SignUpWithEmailUser {
-  id: number
-} 
+  id: number;
+}
 
 export interface ReqUser extends Request {
   user?: {
@@ -40,6 +40,7 @@ export interface Warehouse {
   city?: string;
   county?: string;
   country?: string;
+  postcode?: string;
   row?: string;
   row_section?: string;
 }

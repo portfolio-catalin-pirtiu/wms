@@ -45,8 +45,8 @@ export default function useWarehouses({
   }, [baseUrl, method, setErrorMessage]);
 
   const warehouseProps = {
-    value: warehouses,
-    onChange: handleChange,
+    warehouses: warehouses,
+    setWarehouses: handleChange,
   };
   return warehouseProps;
 }

@@ -11,13 +11,16 @@ export default function WarehouseGroup({
   return (
     <>
       <AddWarehouse
-        warehouses={warehouses.value}
-        handleUpdateWarehouses={warehouses.onChange}
+        warehouses={warehouses.warehouses}
+        handleUpdateWarehouses={warehouses.setWarehouses}
       />
-      <EditWarehouses />
+      <EditWarehouses
+        warehouses={warehouses.warehouses}
+        handleUpdateWarehouses={warehouses.setWarehouses}
+      />
       <WarehouseDropdown
-        warehouses={warehouses.value}
-        handleUpdateWarehouses={warehouses.onChange}
+        warehouses={warehouses.warehouses}
+        handleUpdateWarehouses={warehouses.setWarehouses}
       />
     </>
   );

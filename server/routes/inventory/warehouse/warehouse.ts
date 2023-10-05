@@ -9,8 +9,16 @@ const router = express.Router();
 router.use(isUserAuthenticated);
 
 router.post('/new', async (req: ReqUser, res: Response) => {
-  const { owner, name, address1, address2, city, county, country }: Warehouse =
-    req.body as Warehouse;
+  const {
+    owner,
+    name,
+    address1,
+    address2,
+    city,
+    county,
+    country,
+    postcode,
+  }: Warehouse = req.body as Warehouse;
 
   const newWarehouseSqlQuery = `INSERT INTO warehouses (owner, name, address1, address2, city, county, country) 
     VALUES (
@@ -21,6 +29,7 @@ router.post('/new', async (req: ReqUser, res: Response) => {
       "${city || ''}",
       "${county || ''}",
       "${country || ''}"
+      "${postcode || ''}"
     )`;
 
   const db = mysql.createPool(dbConfig);
@@ -53,17 +62,17 @@ router.get('/', async (req: ReqUser, res: Response) => {
   const userId = req.user?.id;
   let allWarehousesSqlQuery: string;
   if (typeof userId === 'number') {
-    allWarehousesSqlQuery = `SELECT id, name FROM warehouses WHERE owner = "${userId}"`;
+    allWarehousesSqlQuery = `SELECT * FROM warehouses WHERE owner = "${userId}"`;
   }
   const db = mysql.createConnection(dbConfig);
 
   async function getAllWarehouses(): Promise<
-    Array<{ id: number; name: string }>
+    Array<Warehouse>
   > {
     return new Promise((resolve, reject) => {
       db.query(
         allWarehousesSqlQuery,
-        (error, warehouses: Array<{ id: number; name: string }>) => {
+        (error, warehouses: Array<Warehouse>) => {
           if (error) return reject(error);
           if (warehouses.length === 0)
             return reject(new Error('Please add New Warehouse'));

@@ -19,6 +19,7 @@ const warehouseSchema = object().shape({
   city: string(),
   county: string(),
   country: string(),
+  postcode: string(),
 });
 
 export default function AddWarehouse({
@@ -41,6 +42,7 @@ export default function AddWarehouse({
     city: '',
     county: '',
     country: '',
+    postcode: '',
   };
 
   async function handleAddWarehouse(values: Warehouse) {
@@ -179,6 +181,20 @@ export default function AddWarehouse({
                       placeholder="Country"
                       autoComplete="country-name"
                       value={values.country}
+                      onChange={handleChange}
+                    />
+                  </FloatingLabel>
+
+                  <FloatingLabel
+                    controlId="floatingInputPostcode"
+                    label="Postcode"
+                  >
+                    <Form.Control
+                      type="text"
+                      name="postcode"
+                      placeholder="Postcode"
+                      autoComplete="postal-code"
+                      value={values.postcode}
                       onChange={handleChange}
                     />
                   </FloatingLabel>
