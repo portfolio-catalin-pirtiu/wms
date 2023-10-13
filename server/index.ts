@@ -4,11 +4,11 @@ import cors from 'cors';
 import passport from 'passport';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import authenticationRouter from './routes/authentication.js';
-import dashboardRouter from './routes/dashboard.js';
-import userRouter from './routes/user.js';
-import inventoryRouter from './routes/inventory/inventory.js';
-import './routes/middleware/passport-config.mw.js';
+import authenticationRouter from './src/routes/authentication.js';
+import dashboardRouter from './src/routes/dashboard.js';
+import userRouter from './src/routes/user.js';
+import inventoryRouter from './src/routes/inventory/inventory.js';
+import './src/routes/middleware/passport-config.mw.js';
 // the above middleware is a side effect call;
 // it means that it will be called immediately
 // this is necessary for the passport.use(LocalStrategy)

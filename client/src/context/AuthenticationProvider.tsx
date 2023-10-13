@@ -1,5 +1,5 @@
 import { createContext, useState, Dispatch, SetStateAction } from 'react';
-import { LoggedInUser } from '../types/types';
+import { LoggedInUser } from '@features/userAccount';
 
 interface IProviderProps {
   children?: any;

@@ -1,6 +1,18 @@
 {
   "extends": ["react-app", "react-app/jest", "prettier"],
   "rules": {
-    "no-console": "warn"
+    "no-console": "warn",
+
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@features/*/*"],
+            "message": "Please import from index.ts file."
+          }
+        ]
+      }
+    ]
   }
 }

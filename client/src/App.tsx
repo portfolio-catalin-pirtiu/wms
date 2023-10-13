@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavPrivate from './components/NavBar/NavPrivate';
 import NavPublic from './components/NavBar/NavPublic';
-import AppRoutes from './routes/AppRoutes';
-import Message from './components/common/Message/Message';
+import NavRoutes from './components/NavBar/NavRoutes';
+import Message from './components/Message/Message';
 import { AuthenticationContext } from './context/AuthenticationProvider';
-import { LoggedInUser } from './types/types';
+import { LoggedInUser } from '@features/userAccount';
+import { baseUrl } from './data/constants';
 
 interface Warning {
   message: string;
@@ -25,17 +26,15 @@ function App() {
   const navigate = useNavigate();
 
   const fetchUserLoginDetails = useCallback(async () => {
+    const checkAuthenticationStatus = new URL('authentication/status', baseUrl);
     try {
-      const response = await fetch(
-        'http://localhost:4000/authentication/status',
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
+      const response = await fetch(checkAuthenticationStatus, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        credentials: 'include',
+      });
 
       if (response.ok) {
         const loggedInUser: LoggedInUser = await response.json();
@@ -76,13 +75,13 @@ function App() {
   return user.isLoggedIn ? (
     <>
       <NavPrivate />
-      <AppRoutes />
+      <NavRoutes />
       <Message error={errorMessage} warning={warningMessage} />
     </>
   ) : (
     <>
       <NavPublic />
-      <AppRoutes />
+      <NavRoutes />
       <Message error={errorMessage} warning={warningMessage} />
     </>
   );
