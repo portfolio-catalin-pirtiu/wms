@@ -6,9 +6,9 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Stack from 'react-bootstrap/Stack';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
-import { Formik, FormikValues } from 'formik';
+import { Formik } from 'formik';
 import { object, string } from 'yup';
-import { WarehouseGroupProps } from '@features/inventory';
+import { Warehouse, WarehouseGroupProps } from '@features/inventory';
 import useLocalStorage from '../../../../../../../../hooks/useLocalStorage';
 
 const warehouseSchema = object().shape({
@@ -29,12 +29,10 @@ export default function EditWarehouses({
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
 
-  const initialValues = useLocalStorage('selectedWarehouse');
+  const [warehouseToEdit, setWarehouseToEdit] =
+    useLocalStorage('selectedWarehouse');
 
-  const [showWarehouseToEdit, setShowWarehouseToEdit] = useState(false);
-  const handleShowWarehouseToEdit = () => setShowWarehouseToEdit(true);
-
-  function handleEditWarehouse(values: FormikValues) {
+  function handleEditWarehouse(values: Warehouse) {
     handleCloseModal();
   }
 
@@ -42,13 +40,13 @@ export default function EditWarehouses({
     return (
       <Dropdown className="mb-2" role="list">
         <Dropdown.Toggle variant="secondary">
-          {showWarehouseToEdit ? initialValues.name : 'Select warehouse'}
+          {warehouseToEdit.name}
         </Dropdown.Toggle>
         <Dropdown.Menu>
           {warehouses.map((warehouse) => (
             <Dropdown.Item
               key={warehouse.id}
-              onClick={handleShowWarehouseToEdit}
+              onClick={() => setWarehouseToEdit(warehouse)}
             >
               {warehouse.name}
             </Dropdown.Item>
@@ -70,120 +68,117 @@ export default function EditWarehouses({
         </Modal.Header>
 
         <Formik
-          initialValues={initialValues}
+          initialValues={warehouseToEdit}
           onSubmit={handleEditWarehouse}
           validationSchema={warehouseSchema}
+          enableReinitialize={true}
         >
           {({ handleSubmit, handleChange, touched, values, errors }) => (
             <Form noValidate onSubmit={handleSubmit}>
               <Modal.Body>
                 <WarehousesList />
-                {showWarehouseToEdit && (
-                  <Stack gap={3}>
-                    <InputGroup>
-                      <FloatingLabel
-                        controlId="floatingInputName"
-                        label="Warehouse Name"
+
+                <Stack gap={3}>
+                  <InputGroup>
+                    <FloatingLabel
+                      controlId="floatingInputName"
+                      label="Warehouse Name"
+                    >
+                      <Form.Control
+                        type="text"
+                        name="name"
+                        placeholder="Warehouse Name"
+                        value={values.name}
+                        onChange={handleChange}
+                        isValid={touched.name && !errors.name}
+                        isInvalid={!!errors.name}
+                      />
+                      <Form.Control.Feedback
+                        type={errors.name ? 'invalid' : 'valid'}
                       >
-                        <Form.Control
-                          type="text"
-                          name="name"
-                          placeholder="Warehouse Name"
-                          value={values.name}
-                          onChange={handleChange}
-                          isValid={touched.name && !errors.name}
-                          isInvalid={!!errors.name}
-                        />
-                        <Form.Control.Feedback
-                          type={errors.name ? 'invalid' : 'valid'}
-                        >
-                          {errors.name ? errors.name : 'Looks Good!'}
-                        </Form.Control.Feedback>
-                      </FloatingLabel>
-                    </InputGroup>
-
-                    <FloatingLabel
-                      controlId="floatingInputAddress1"
-                      label="Address 1"
-                    >
-                      <Form.Control
-                        type="address"
-                        name="address1"
-                        placeholder="Address 1"
-                        autoComplete="on"
-                        value={values.address1}
-                        onChange={handleChange}
-                      />
+                        {errors.name ? errors.name : 'Looks Good!'}
+                      </Form.Control.Feedback>
                     </FloatingLabel>
+                  </InputGroup>
 
-                    <FloatingLabel
-                      controlId="floatingInputAddress2"
-                      label="Address 2"
-                    >
-                      <Form.Control
-                        type="text"
-                        name="address2"
-                        placeholder="Address 2"
-                        autoComplete="on"
-                        value={values.address2}
-                        onChange={handleChange}
-                      />
-                    </FloatingLabel>
+                  <FloatingLabel
+                    controlId="floatingInputAddress1"
+                    label="Address 1"
+                  >
+                    <Form.Control
+                      type="address"
+                      name="address1"
+                      placeholder="Address 1"
+                      autoComplete="on"
+                      value={values.address1}
+                      onChange={handleChange}
+                    />
+                  </FloatingLabel>
 
-                    <FloatingLabel controlId="floatingInputCity" label="City">
-                      <Form.Control
-                        type="text"
-                        name="city"
-                        placeholder="City"
-                        autoComplete="on"
-                        value={values.city}
-                        onChange={handleChange}
-                      />
-                    </FloatingLabel>
+                  <FloatingLabel
+                    controlId="floatingInputAddress2"
+                    label="Address 2"
+                  >
+                    <Form.Control
+                      type="text"
+                      name="address2"
+                      placeholder="Address 2"
+                      autoComplete="on"
+                      value={values.address2}
+                      onChange={handleChange}
+                    />
+                  </FloatingLabel>
 
-                    <FloatingLabel
-                      controlId="floatingInputCounty"
-                      label="County"
-                    >
-                      <Form.Control
-                        type="text"
-                        name="county"
-                        placeholder="County"
-                        autoComplete="on"
-                        value={values.county}
-                        onChange={handleChange}
-                      />
-                    </FloatingLabel>
+                  <FloatingLabel controlId="floatingInputCity" label="City">
+                    <Form.Control
+                      type="text"
+                      name="city"
+                      placeholder="City"
+                      autoComplete="on"
+                      value={values.city}
+                      onChange={handleChange}
+                    />
+                  </FloatingLabel>
 
-                    <FloatingLabel
-                      controlId="floatingInputCountry"
-                      label="Country"
-                    >
-                      <Form.Control
-                        type="text"
-                        name="country"
-                        placeholder="Country"
-                        autoComplete="country-name"
-                        value={values.country}
-                        onChange={handleChange}
-                      />
-                    </FloatingLabel>
+                  <FloatingLabel controlId="floatingInputCounty" label="County">
+                    <Form.Control
+                      type="text"
+                      name="county"
+                      placeholder="County"
+                      autoComplete="on"
+                      value={values.county}
+                      onChange={handleChange}
+                    />
+                  </FloatingLabel>
 
-                    <FloatingLabel
-                      controlId="floatingInputPostcode"
-                      label="Postcode"
-                    >
-                      <Form.Control
-                        type="text"
-                        name="postcode"
-                        placeholder="Postcode"
-                        autoComplete="postal-code"
-                        value={values.postcode}
-                        onChange={handleChange}
-                      />
-                    </FloatingLabel>
-                  </Stack>
-                )}
+                  <FloatingLabel
+                    controlId="floatingInputCountry"
+                    label="Country"
+                  >
+                    <Form.Control
+                      type="text"
+                      name="country"
+                      placeholder="Country"
+                      autoComplete="country-name"
+                      value={values.country}
+                      onChange={handleChange}
+                    />
+                  </FloatingLabel>
+
+                  <FloatingLabel
+                    controlId="floatingInputPostcode"
+                    label="Postcode"
+                  >
+                    <Form.Control
+                      type="text"
+                      name="postcode"
+                      placeholder="Postcode"
+                      autoComplete="postal-code"
+                      value={values.postcode}
+                      onChange={handleChange}
+                    />
+                  </FloatingLabel>
+                </Stack>
               </Modal.Body>
 
               <Modal.Footer>
