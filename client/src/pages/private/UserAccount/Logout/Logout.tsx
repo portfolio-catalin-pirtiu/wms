@@ -1,9 +1,9 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthenticationContext } from '../../../../context/AuthenticationProvider';
-import { LoggedInUser } from '@features/userAccount';
+import { ILoggedInUser } from '@features/userAccount';
 import Message from '../../../../components/Message/Message';
-import { baseUrl } from '../../../../data/constants';
+import { serverBaseUrl } from '../../../../data/constants';
 
 export default function Logout() {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ export default function Logout() {
   const { setUser } = useContext(AuthenticationContext);
 
   useEffect(() => {
-    const logoutUserFromApi = new URL('authentication/logout', baseUrl);
+    const logoutUserFromApi = new URL('authentication/logout', serverBaseUrl);
     async function logoutUser() {
       try {
         const logoutStatus = await fetch(logoutUserFromApi, {
@@ -23,7 +23,7 @@ export default function Logout() {
         });
 
         if (logoutStatus.ok) {
-          const noUser: LoggedInUser = await logoutStatus.json();
+          const noUser: ILoggedInUser = await logoutStatus.json();
           setUser(noUser);
         } else {
           setTimeout(() => {

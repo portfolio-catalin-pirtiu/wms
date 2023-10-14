@@ -6,8 +6,8 @@ import NavPublic from './components/NavBar/NavPublic';
 import NavRoutes from './components/NavBar/NavRoutes';
 import Message from './components/Message/Message';
 import { AuthenticationContext } from './context/AuthenticationProvider';
-import { LoggedInUser } from '@features/userAccount';
-import { baseUrl } from './data/constants';
+import { ILoggedInUser } from '@features/userAccount';
+import { serverBaseUrl } from './data/constants';
 
 interface Warning {
   message: string;
@@ -26,7 +26,10 @@ function App() {
   const navigate = useNavigate();
 
   const fetchUserLoginDetails = useCallback(async () => {
-    const checkAuthenticationStatus = new URL('authentication/status', baseUrl);
+    const checkAuthenticationStatus = new URL(
+      'authentication/status',
+      serverBaseUrl,
+    );
     try {
       const response = await fetch(checkAuthenticationStatus, {
         method: 'GET',
@@ -37,10 +40,10 @@ function App() {
       });
 
       if (response.ok) {
-        const loggedInUser: LoggedInUser = await response.json();
+        const loggedInUser: ILoggedInUser = await response.json();
         setUser(loggedInUser);
       } else if (user.isLoggedIn) {
-        const noUser: LoggedInUser = await response.json();
+        const noUser: ILoggedInUser = await response.json();
         setUser(noUser);
         localStorage.removeItem('loggedInUser');
         navigate('/authentication/login');

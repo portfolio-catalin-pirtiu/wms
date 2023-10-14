@@ -1,13 +1,13 @@
 import { createContext, useState, Dispatch, SetStateAction } from 'react';
-import { LoggedInUser } from '@features/userAccount';
+import { ILoggedInUser } from '@features/userAccount';
 
 interface IProviderProps {
   children?: any;
 }
 
 interface AuthenticationContextValue {
-  user: LoggedInUser;
-  setUser: Dispatch<SetStateAction<LoggedInUser>>;
+  user: ILoggedInUser;
+  setUser: Dispatch<SetStateAction<ILoggedInUser>>;
 }
 
 const authenticationCtxDefaultValue: AuthenticationContextValue = {
@@ -15,7 +15,7 @@ const authenticationCtxDefaultValue: AuthenticationContextValue = {
   setUser: (user) => {},
 };
 
-function loadLocalStorage(): LoggedInUser {
+function loadLocalStorage(): ILoggedInUser {
   const value = localStorage.getItem('loggedInUser');
   if (typeof value === 'string') {
     return JSON.parse(value);

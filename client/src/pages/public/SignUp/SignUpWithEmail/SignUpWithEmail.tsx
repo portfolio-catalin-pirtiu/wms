@@ -7,8 +7,8 @@ import { Formik, FormikValues } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import Message from '../../../../components/Message/Message';
-import { DatabaseUser } from '@features/userAccount';
-import { baseUrl } from '../../../../data/constants';
+import { IDatabaseUser } from '@features/userAccount';
+import { serverBaseUrl } from '../../../../data/constants';
 
 const userSchema = object().shape({
   name: string().required('Required'),
@@ -35,7 +35,7 @@ export default function SignUpWithEmail() {
     county: '',
     country: '',
     postcode: '',
-  } as DatabaseUser);
+  } as IDatabaseUser);
   const localStorageSignUpFormKey = 'signUpFormData';
 
   useEffect(() => {
@@ -49,11 +49,11 @@ export default function SignUpWithEmail() {
     }
   }, [errorMessage]);
 
-  function getFromLocalStorage(key: string): DatabaseUser {
+  function getFromLocalStorage(key: string): IDatabaseUser {
     const localStorageData = localStorage.getItem(key);
 
     if (typeof localStorageData === 'string') {
-      const data: DatabaseUser = JSON.parse(localStorageData);
+      const data: IDatabaseUser = JSON.parse(localStorageData);
       return data;
     }
     return {
@@ -66,11 +66,11 @@ export default function SignUpWithEmail() {
       county: '',
       country: '',
       postcode: '',
-    } as DatabaseUser;
+    } as IDatabaseUser;
   }
 
   function submitForm(values: FormikValues) {
-    const newUserToApi = new URL('authentication/users', baseUrl);
+    const newUserToApi = new URL('authentication/users', serverBaseUrl);
     fetch(newUserToApi, {
       method: 'POST',
       headers: {

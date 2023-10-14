@@ -1,24 +1,24 @@
 import { useEffect, useState, useContext } from 'react';
 import { CommunicationContext } from '../context/CommunicationsProvider';
-import { Warehouse, WarehouseProps } from '@features/inventory';
+import { IWarehouse, IWarehouseGroupProps } from '@features/inventory';
 
 interface UseWarehouse {
-  baseUrl: string;
+  serverBaseUrl: string;
 }
 
 export default function useWarehouses({
-  baseUrl,
-}: UseWarehouse): WarehouseProps {
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  serverBaseUrl,
+}: UseWarehouse): IWarehouseGroupProps {
+  const [warehouses, setWarehouses] = useState<IWarehouse[]>([]);
 
   const { setErrorMessage } = useContext(CommunicationContext);
 
-  function handleChange(warehouses: Warehouse[]) {
+  function handleChange(warehouses: IWarehouse[]) {
     setWarehouses(warehouses);
   }
 
   useEffect(() => {
-    const url = new URL('inventory/warehouse', baseUrl);
+    const url = new URL('inventory/warehouse', serverBaseUrl);
     (async () => {
       try {
         const warehouseDatabaseRequest = await fetch(url, {
@@ -29,7 +29,7 @@ export default function useWarehouses({
           credentials: 'include',
         });
         if (warehouseDatabaseRequest.ok) {
-          const allWarehouses: Warehouse[] =
+          const allWarehouses: IWarehouse[] =
             await warehouseDatabaseRequest.json();
           handleChange(allWarehouses);
         } else {
@@ -40,11 +40,11 @@ export default function useWarehouses({
         if (e instanceof Error) setErrorMessage(e.message);
       }
     })();
-  }, [baseUrl, setErrorMessage]);
+  }, [serverBaseUrl, setErrorMessage]);
 
   const warehouseProps = {
     warehouses: warehouses,
-    setWarehouses: handleChange,
+    onWarehouseChange: handleChange,
   };
   return warehouseProps;
 }

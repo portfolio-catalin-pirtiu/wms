@@ -5,10 +5,10 @@ import { Formik, FormikValues } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Message from '../../../components/Message/Message';
-import { LoggedInUser } from '@features/userAccount';
+import { ILoggedInUser } from '@features/userAccount';
 import { useContext } from 'react';
 import { AuthenticationContext } from '../../../context/AuthenticationProvider';
-import { baseUrl } from '../../../data/constants';
+import { serverBaseUrl } from '../../../data/constants';
 
 const loginSchema = object().shape({
   email: string().email('Invalid email address').required('Required'),
@@ -16,7 +16,7 @@ const loginSchema = object().shape({
 });
 
 export default function Login() {
-  const loginUserToApi = new URL('authentication/login', baseUrl);
+  const loginUserToApi = new URL('authentication/login', serverBaseUrl);
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
   const { setUser } = useContext(AuthenticationContext);
@@ -35,7 +35,7 @@ export default function Login() {
       });
 
       if (response.ok) {
-        const loggedInUser: LoggedInUser = await response.json();
+        const loggedInUser: ILoggedInUser = await response.json();
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
         setUser(loggedInUser);
         navigate('/dashboard');

@@ -2,11 +2,9 @@ import express, { Response } from 'express';
 import mysql from 'mysql';
 import dbConfig from '../../../data/dbConfig.js';
 import { ReqUser, Warehouse } from '../../../types/types.js';
-import isUserAuthenticated from '../../middleware/isAuthenticated.mw.js';
 
 const router = express.Router();
-
-router.use(isUserAuthenticated);
+// this route (warehouse route) secured one level up at '/inventory' route
 
 router.post('/new', async (req: ReqUser, res: Response) => {
   const {
@@ -85,6 +83,49 @@ router.get('/', async (req: ReqUser, res: Response) => {
   }
 });
 
-router.put('/edit/:id', (req: ReqUser, res: Response) => {});
+router.put('/edit/:id', async (req: ReqUser, res: Response) => {
+  const {
+    id,
+    name,
+    address1,
+    address2,
+    city,
+    county,
+    country,
+    postcode,
+  }: Warehouse = req.body as Warehouse;
+
+  let sqlUpdateWarehouse =
+    'UPDATE warehouses SET name = ?, address1 = ?, address2 = ?, city = ?, county = ?, country = ?, postcode = ? WHERE id = ?';
+  const values = [
+    name,
+    address1,
+    address2,
+    city,
+    county,
+    country,
+    postcode,
+    id,
+  ];
+  sqlUpdateWarehouse = mysql.format(sqlUpdateWarehouse, values);
+  const db = mysql.createPool(dbConfig);
+
+  async function updateWarehouse(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      db.query(sqlUpdateWarehouse, (error) => {
+        if (error) return reject(error);
+        return resolve(true);
+      });
+    });
+  }
+
+  try {
+    const isWarehouseUpdated = await updateWarehouse();
+    if (isWarehouseUpdated) res.sendStatus(200);
+    db.end();
+  } catch (e) {
+    if (e instanceof Error) res.status(401).json(e.message);
+  }
+});
 
 export default router;

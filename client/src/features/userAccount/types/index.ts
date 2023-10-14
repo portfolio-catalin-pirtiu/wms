@@ -1,4 +1,4 @@
-export interface DatabaseUser {
+export interface IDatabaseUser {
   id?: number;
   name: string;
   email: string;
@@ -11,7 +11,7 @@ export interface DatabaseUser {
   postcode?: string;
 }
 
-export interface LoggedInUser {
+export interface ILoggedInUser {
   isLoggedIn: boolean;
   id?: number;
   name?: string;

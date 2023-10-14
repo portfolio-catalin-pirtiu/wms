@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { ResponseStatus } from '../../../types';
-import { DatabaseUser, LoggedInUser } from '@features/userAccount';
+import { IDatabaseUser, ILoggedInUser } from '@features/userAccount';
 import Message from '../../../components/Message/Message';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -13,7 +13,7 @@ import { FormControl } from 'react-bootstrap';
 import { AuthenticationContext } from '../../../context/AuthenticationProvider';
 import { PasswordModal } from '@features/userAccount';
 import { DeleteAccountModal } from '@features/userAccount';
-import { baseUrl } from '../../../data/constants';
+import { serverBaseUrl } from '../../../data/constants';
 
 const userAccountSchema = object().shape({
   address1: string(),
@@ -25,7 +25,7 @@ const userAccountSchema = object().shape({
 });
 
 export default function UserAccount() {
-  const [userAccount, setUserAccount] = useState<DatabaseUser>({
+  const [userAccount, setUserAccount] = useState<IDatabaseUser>({
     id: 0,
     name: '',
     email: '',
@@ -43,7 +43,7 @@ export default function UserAccount() {
   const { setUser } = useContext(AuthenticationContext);
 
   useEffect(() => {
-    const userAccountFromApi = new URL('user/account', baseUrl);
+    const userAccountFromApi = new URL('user/account', serverBaseUrl);
     (async function getUserDetails() {
       try {
         const loggedInUserRequest = await fetch(userAccountFromApi, {
@@ -54,7 +54,7 @@ export default function UserAccount() {
           credentials: 'include',
         });
 
-        const loggedInUser: DatabaseUser = await loggedInUserRequest.json();
+        const loggedInUser: IDatabaseUser = await loggedInUserRequest.json();
         setUserAccount(loggedInUser);
       } catch (e) {
         if (e instanceof Error) {
@@ -68,7 +68,10 @@ export default function UserAccount() {
   const handleEditingOff = () => setIsEditing(false);
 
   async function handleEditFormSubmit(values: FormikValues) {
-    const updateUserAccountFromApi = new URL('user/updateAccount', baseUrl);
+    const updateUserAccountFromApi = new URL(
+      'user/updateAccount',
+      serverBaseUrl,
+    );
     handleEditingOff();
     setUserAccount({
       ...values,
@@ -101,7 +104,10 @@ export default function UserAccount() {
   }
 
   async function handlePasswordChange(values: FormikValues) {
-    const updateUserAccountPassword = new URL('user/passwordChange', baseUrl);
+    const updateUserAccountPassword = new URL(
+      'user/passwordChange',
+      serverBaseUrl,
+    );
     try {
       const passwordChangeRequest = await fetch(updateUserAccountPassword, {
         method: 'POST',
@@ -126,7 +132,7 @@ export default function UserAccount() {
   }
 
   async function handleDeleteAccount() {
-    const deleteUserAccountFromApi = new URL('user/delete', baseUrl);
+    const deleteUserAccountFromApi = new URL('user/delete', serverBaseUrl);
     try {
       const deleteAccountRequest = await fetch(deleteUserAccountFromApi, {
         method: 'POST',
@@ -137,7 +143,7 @@ export default function UserAccount() {
       });
 
       if (deleteAccountRequest.ok) {
-        const noUser: LoggedInUser = await deleteAccountRequest.json();
+        const noUser: ILoggedInUser = await deleteAccountRequest.json();
         setUser(noUser);
         clearLocalStorage();
       } else {

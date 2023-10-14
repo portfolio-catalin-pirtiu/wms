@@ -24,6 +24,7 @@ passport.use(
           return done(error);
         }
       });
+      db.end();
     }
   )
 );

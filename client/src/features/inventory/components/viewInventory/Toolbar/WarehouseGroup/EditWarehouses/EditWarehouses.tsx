@@ -2,18 +2,19 @@ import { useState, useContext } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Dropdown from 'react-bootstrap/Dropdown';
 import Stack from 'react-bootstrap/Stack';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { Formik } from 'formik';
-import { object, string, number } from 'yup';
-import { AuthenticationContext } from '../../../../../../../../context/AuthenticationProvider';
-import { CommunicationContext } from '../../../../../../../../context/CommunicationsProvider';
-import { Warehouse, WarehouseGroupProps } from '@features/inventory';
-import { baseUrl } from '../../../../../../../../data/constants';
+import { object, string } from 'yup';
+import { IWarehouse, IWarehouseGroupProps } from '@features/inventory';
+import useLocalStorage from '../../../../../../../hooks/useLocalStorage';
+import { serverBaseUrl } from '../../../../../../../data/constants';
+import { Warehouse } from '@features/inventory';
+import { CommunicationContext } from '../../../../../../../context/CommunicationsProvider';
 
 const warehouseSchema = object().shape({
-  owner: number().required().positive().integer(),
   name: string().required('The Warehouse Name is required'),
   address1: string(),
   address2: string(),
@@ -23,79 +24,102 @@ const warehouseSchema = object().shape({
   postcode: string(),
 });
 
-export default function AddWarehouse({
+export default function EditWarehouses({
   warehouses,
-  handleUpdateWarehouses,
-}: WarehouseGroupProps) {
-  const addNewWarehouseToApi = new URL('inventory/warehouse/new', baseUrl);
-  const { user } = useContext(AuthenticationContext);
+  onWarehouseChange,
+}: IWarehouseGroupProps) {
+  const [showModal, setShowModal] = useState(false);
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  const [warehouseToEdit, setWarehouseToEdit] =
+    useLocalStorage('selectedWarehouse');
+  const [formValues] = warehouses.filter(
+    (warehouse) => warehouse.id === warehouseToEdit.id,
+  );
   const { setSuccessMessage, setErrorMessage } =
     useContext(CommunicationContext);
-  const [show, setShow] = useState(false);
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
 
-  const warehouseInitialValues = {
-    id: 0,
-    owner: user.id || 0,
-    name: '',
-    address1: '',
-    address2: '',
-    city: '',
-    county: '',
-    country: '',
-    postcode: '',
-  };
+  function handleUpdateWarehousesState(updatedWarehouse: IWarehouse) {
+    const updatedWarehouses = warehouses.map((warehouse) => {
+      if (warehouse.id === updatedWarehouse.id) {
+        return updatedWarehouse;
+      }
+      return warehouse;
+    });
+    onWarehouseChange(updatedWarehouses);
+  }
 
-  async function handleAddWarehouse(values: Warehouse) {
-    handleClose();
+  async function handleUpdateWarehouse(formValues: IWarehouse) {
+    handleCloseModal();
+    const updatedWarehouse = new Warehouse(formValues);
+    const updateWarehouseUrl = new URL(
+      `inventory/warehouse/edit/${updatedWarehouse.id}`,
+      serverBaseUrl,
+    );
+
     try {
-      const addWarehouseRequest = await fetch(addNewWarehouseToApi, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
+      const updateWarehouseRequest = await fetch(updateWarehouseUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedWarehouse),
         credentials: 'include',
       });
-
-      if (addWarehouseRequest.ok) {
-        handleUpdateWarehouses([
-          ...warehouses,
-          { id: values.id, name: values.name },
-        ]);
-        setSuccessMessage('New Warehouse added successfully.');
+      if (updateWarehouseRequest.ok) {
+        handleUpdateWarehousesState(updatedWarehouse);
+        setSuccessMessage(
+          `${updatedWarehouse.name} Warehouse Updated Successfully`,
+        );
       } else {
-        const error: string = await addWarehouseRequest.json();
+        const error: string = await updateWarehouseRequest.json();
         throw new Error(error);
       }
     } catch (e) {
-      if (e instanceof Error) {
-        setErrorMessage(e.message);
-      }
+      if (e instanceof Error) setErrorMessage(e.message);
     }
+  }
+
+  function WarehousesList() {
+    return (
+      <Dropdown className="mb-2" role="list">
+        <Dropdown.Toggle variant="secondary">
+          {warehouseToEdit.name}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          {warehouses.map((warehouse) => (
+            <Dropdown.Item
+              key={warehouse.id}
+              onClick={() => setWarehouseToEdit(warehouse)}
+            >
+              {warehouse.name}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
+    );
   }
 
   return (
     <>
-      <Button variant="secondary" onClick={handleShow}>
-        Add Warehouse
+      <Button variant="secondary" onClick={handleShowModal}>
+        Edit Warehouses
       </Button>
 
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Warehouse</Modal.Title>
+          <Modal.Title>Edit Warehouses</Modal.Title>
         </Modal.Header>
 
         <Formik
-          initialValues={warehouseInitialValues}
-          onSubmit={handleAddWarehouse}
+          initialValues={formValues}
+          onSubmit={handleUpdateWarehouse}
           validationSchema={warehouseSchema}
+          enableReinitialize={true}
         >
           {({ handleSubmit, handleChange, touched, values, errors }) => (
             <Form noValidate onSubmit={handleSubmit}>
               <Modal.Body>
-                <Form.Control name="owner" defaultValue={values.owner} hidden />
+                <WarehousesList />
 
                 <Stack gap={3}>
                   <InputGroup>
@@ -201,12 +225,10 @@ export default function AddWarehouse({
               </Modal.Body>
 
               <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button variant="secondary" onClick={handleCloseModal}>
                   Close
                 </Button>
-                <Button variant="primary" type="submit">
-                  Save
-                </Button>
+                <Button type="submit">Save</Button>
               </Modal.Footer>
             </Form>
           )}

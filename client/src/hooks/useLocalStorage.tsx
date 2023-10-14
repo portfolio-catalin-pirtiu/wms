@@ -1,17 +1,19 @@
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { Warehouse } from '@features/inventory';
+import { IWarehouse } from '@features/inventory';
 
-export default function useLocalStorage(key: string): [Warehouse, Dispatch<SetStateAction<Warehouse>>] {
-  const [data, setData] = useState<Warehouse>({ id: 0, name: 'Warehouse' });
+export default function useLocalStorage(
+  key: string,
+): [IWarehouse, Dispatch<SetStateAction<IWarehouse>>] {
+  const [data, setData] = useState<IWarehouse>({ id: 0, name: 'Warehouse' });
 
   useEffect(() => {
     if (key === 'selectedWarehouse') {
-      const localStorageWarehouse = localStorage.getItem(key);
-      if (typeof localStorageWarehouse === 'string') {
-        const warehouseName: Warehouse = JSON.parse(localStorageWarehouse);
-        setData(warehouseName);
-      } else {
-        setData({ id: 0, name: 'Warehouse' });
+      const localStorageWarehouseKey = localStorage.getItem(key);
+      if (typeof localStorageWarehouseKey === 'string') {
+        const localStorageWarehouse: IWarehouse = JSON.parse(
+          localStorageWarehouseKey,
+        );
+        setData(localStorageWarehouse);
       }
     }
   }, [key]);

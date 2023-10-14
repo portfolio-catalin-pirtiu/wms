@@ -1,4 +1,4 @@
-export interface Warehouse {
+export interface IWarehouse {
   id: number;
   owner?: number;
   name: string;
@@ -12,12 +12,7 @@ export interface Warehouse {
   row_section?: string;
 }
 
-export interface WarehouseGroupProps {
-  warehouses: Warehouse[];
-  handleUpdateWarehouses: (warehouses: Warehouse[]) => void;
-}
-
-export interface WarehouseProps {
-  warehouses: Warehouse[];
-  setWarehouses: (warehouses: Warehouse[]) => void;
+export interface IWarehouseGroupProps {
+  warehouses: IWarehouse[];
+  onWarehouseChange: (warehouses: IWarehouse[]) => void;
 }

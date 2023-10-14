@@ -1,15 +1,12 @@
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Warehouse, WarehouseGroupProps } from '@features/inventory';
-import useLocalStorage from '../../../../../../../../hooks/useLocalStorage';
+import { IWarehouse, IWarehouseGroupProps } from '@features/inventory';
+import useLocalStorage from '../../../../../../../hooks/useLocalStorage';
 
-export default function WarehouseDropdown({
-  warehouses,
-  handleUpdateWarehouses,
-}: WarehouseGroupProps) {
+export default function WarehouseDropdown({ warehouses }: IWarehouseGroupProps) {
   const [selectedWarehouse, setSelectedWarehouse] =
     useLocalStorage('selectedWarehouse');
 
-  function handleChangeWarehouseSelection(warehouse: Warehouse) {
+  function handleChangeWarehouseSelection(warehouse: IWarehouse) {
     setSelectedWarehouse(warehouse);
     localStorage.setItem('selectedWarehouse', JSON.stringify(warehouse));
   }
