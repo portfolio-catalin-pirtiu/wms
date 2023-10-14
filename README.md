@@ -15,7 +15,7 @@ Inventory tool for e-Commerce stores, fulfilment centers and warehouses.
 - Reporting: financial, orders, shipping;
 - Upload and Download data to and from the system.
 
-## Technologies used
+## Technologies Used
 
 ### Frontend
 
@@ -24,7 +24,7 @@ Inventory tool for e-Commerce stores, fulfilment centers and warehouses.
 - Bootstrap – I can use already styled built-in components. For example: `Form`, `Button`, `Table`.
 - Formik – modern `React` form validation which includes error messages and confirmation messages underneath the form fields;
 - Yup – works hand in hand with `Formik` for form fields validation;
-- Eslint – helps maintain code structure accross all files;
+- Eslint – helps maintain code structure across all files;
 - Prettier – corrects my indentation and whitespace;
 
 ### Backend
@@ -35,7 +35,7 @@ Inventory tool for e-Commerce stores, fulfilment centers and warehouses.
 - Passport.js – manages the login security of the app;
 - Bcrypt – password encryption tool.
 
-## How to Install and Run the app
+## How to Install and Run the App
 
 - Create a new folder where the project will be located;
 - Open terminal at that folder's location;
