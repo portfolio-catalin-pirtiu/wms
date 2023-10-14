@@ -1,13 +1,15 @@
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthenticationContext } from '../../../../context/AuthenticationProvider';
+import { CommunicationContext } from '../../../../context/CommunicationsProvider';
 import { ILoggedInUser } from '@features/userAccount';
 import Message from '../../../../components/Message/Message';
 import { serverBaseUrl } from '../../../../data/constants';
 
 export default function Logout() {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState(' ');
+  const { successMessage, setSuccessMessage, errorMessage, setErrorMessage } =
+    useContext(CommunicationContext);
   const { setUser } = useContext(AuthenticationContext);
 
   useEffect(() => {
@@ -24,7 +26,10 @@ export default function Logout() {
 
         if (logoutStatus.ok) {
           const noUser: ILoggedInUser = await logoutStatus.json();
-          setUser(noUser);
+          setSuccessMessage('Logout Successful');
+          setTimeout(() => {
+            setUser(noUser);
+          }, 2000);
         } else {
           setTimeout(() => {
             navigate('/dashboard');
@@ -38,11 +43,11 @@ export default function Logout() {
       }
     }
     logoutUser();
-  }, [navigate, setUser]);
+  }, [navigate, setUser, setErrorMessage, setSuccessMessage]);
 
   return (
     <>
-      <Message error={errorMessage} />
+      <Message success={successMessage} error={errorMessage} />
     </>
   );
 }

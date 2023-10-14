@@ -14,6 +14,7 @@ import { AuthenticationContext } from '../../../context/AuthenticationProvider';
 import { PasswordModal } from '@features/userAccount';
 import { DeleteAccountModal } from '@features/userAccount';
 import { serverBaseUrl } from '../../../data/constants';
+import { CommunicationContext } from '../../../context/CommunicationsProvider';
 
 const userAccountSchema = object().shape({
   address1: string(),
@@ -38,9 +39,9 @@ export default function UserAccount() {
     postcode: '',
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [errorMessage, setErrorMEssage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const { setUser } = useContext(AuthenticationContext);
+  const { successMessage, setSuccessMessage, errorMessage, setErrorMessage } =
+    useContext(CommunicationContext);
 
   useEffect(() => {
     const userAccountFromApi = new URL('user/account', serverBaseUrl);
@@ -58,11 +59,11 @@ export default function UserAccount() {
         setUserAccount(loggedInUser);
       } catch (e) {
         if (e instanceof Error) {
-          setErrorMEssage(e.message);
+          setErrorMessage(e.message);
         }
       }
     })();
-  }, []);
+  }, [setErrorMessage]);
 
   const handleEditingOn = () => setIsEditing(true);
   const handleEditingOff = () => setIsEditing(false);
@@ -98,7 +99,7 @@ export default function UserAccount() {
       }
     } catch (e) {
       if (e instanceof Error) {
-        setErrorMEssage(e.message);
+        setErrorMessage(e.message);
       }
     }
   }
@@ -122,11 +123,11 @@ export default function UserAccount() {
         setSuccessMessage('Password Changed Successfully');
       } else {
         const error: ResponseStatus = await passwordChangeRequest.json();
-        setErrorMEssage(error.message);
+        setErrorMessage(error.message);
       }
     } catch (e) {
       if (e instanceof Error) {
-        setErrorMEssage(e.message);
+        setErrorMessage(e.message);
       }
     }
   }
@@ -152,7 +153,7 @@ export default function UserAccount() {
       }
     } catch (e) {
       if (e instanceof Error) {
-        setErrorMEssage(e.message);
+        setErrorMessage(e.message);
       }
     }
   }
