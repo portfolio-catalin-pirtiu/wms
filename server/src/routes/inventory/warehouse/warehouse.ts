@@ -18,17 +18,21 @@ router.post('/new', async (req: ReqUser, res: Response) => {
     postcode,
   }: Warehouse = req.body as Warehouse;
 
-  const newWarehouseSqlQuery = `INSERT INTO warehouses (owner, name, address1, address2, city, county, country, postcode) 
-    VALUES (
-      "${owner}",
-      "${name}",
-      "${address1 || ''}",
-      "${address2 || ''}",
-      "${city || ''}",
-      "${county || ''}",
-      "${country || ''}",
-      "${postcode || ''}"
-    )`;
+  let newWarehouseSqlQuery = `INSERT INTO warehouses 
+    (owner, name, address1, address2, city, county, country, postcode) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  const values = [
+    owner,
+    name,
+    address1,
+    address2,
+    city,
+    county,
+    country,
+    postcode,
+  ];
+  newWarehouseSqlQuery = mysql.format(newWarehouseSqlQuery, values);
 
   const db = mysql.createPool(dbConfig);
 
@@ -45,22 +49,18 @@ router.post('/new', async (req: ReqUser, res: Response) => {
 
   try {
     const isNewWarehouseCreated = await createNewWarehouse();
-    if (isNewWarehouseCreated) {
-      res.sendStatus(200);
-    }
+    if (isNewWarehouseCreated) res.sendStatus(200);
+    db.end();
   } catch (e) {
-    if (e instanceof Error) {
-      res.status(401).json(e.message);
-    }
+    if (e instanceof Error) res.status(401).json(e.message);
   }
-  db.end();
 });
 
 router.get('/', async (req: ReqUser, res: Response) => {
   const userId = req.user?.id;
-  let allWarehousesSqlQuery: string;
+  let allWarehousesSqlQuery = 'SELECT * FROM warehouses WHERE owner = ?';
   if (typeof userId === 'number') {
-    allWarehousesSqlQuery = `SELECT * FROM warehouses WHERE owner = "${userId}"`;
+    allWarehousesSqlQuery = mysql.format(allWarehousesSqlQuery, [userId]);
   }
   const db = mysql.createConnection(dbConfig);
 
@@ -78,6 +78,7 @@ router.get('/', async (req: ReqUser, res: Response) => {
   try {
     const allWarehouses = await getAllWarehouses();
     res.status(200).json(allWarehouses);
+    db.end();
   } catch (e) {
     if (e instanceof Error) res.status(401).json(e.message);
   }
@@ -95,8 +96,9 @@ router.put('/edit/:id', async (req: ReqUser, res: Response) => {
     postcode,
   }: Warehouse = req.body as Warehouse;
 
-  let sqlUpdateWarehouse =
-    'UPDATE warehouses SET name = ?, address1 = ?, address2 = ?, city = ?, county = ?, country = ?, postcode = ? WHERE id = ?';
+  let sqlUpdateWarehouse = `UPDATE warehouses SET 
+    name = ?, address1 = ?, address2 = ?, city = ?, county = ?, country = ?, postcode = ? 
+    WHERE id = ?`;
   const values = [
     name,
     address1,

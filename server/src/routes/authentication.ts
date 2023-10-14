@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post('/users', async (req: Request, res: Response) => {
   // post a new user
-  const db = mysql.createConnection(dbConfig);
+  const db = mysql.createPool(dbConfig);
 
   const {
     name,
@@ -24,27 +24,39 @@ router.post('/users', async (req: Request, res: Response) => {
   }: SignUpWithEmailUser = req.body as SignUpWithEmailUser;
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const sqlQuery = `INSERT INTO users (name, email, password, address1, address2, city, county, country, postcode) 
-    VALUES (
-      "${name}", 
-      "${email}", 
-      "${hashedPassword}", 
-      "${address1 || 'null'}", 
-      "${address2 || 'null'}", 
-      "${city || 'null'}", 
-      "${county || 'null'}", 
-      "${country || 'null'}", 
-      "${postcode || 'null'}"
-    )`;
+  let sqlQuery = `INSERT INTO users 
+    (name, email, password, address1, address2, city, county, country, postcode) 
+    VALUES 
+    (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const values = [
+    name,
+    email,
+    hashedPassword,
+    address1,
+    address2,
+    city,
+    county,
+    country,
+    postcode,
+  ];
+  sqlQuery = mysql.format(sqlQuery, values);
 
-  db.query(sqlQuery, (error) => {
-    if (error) {
-      res.statusMessage = 'Database Error';
-      return res.sendStatus(400);
-    }
-    return res.sendStatus(200);
-  });
-  db.end();
+  async function createNewUser(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      db.query(sqlQuery, (error) => {
+        if (error) return reject(error);
+        return resolve(true);
+      });
+    });
+  }
+
+  try {
+    const isUserCreated = await createNewUser();
+    if (isUserCreated) res.sendStatus(200);
+    db.end();
+  } catch (e) {
+    if (e instanceof Error) res.status(400).json(e.message);
+  }
 });
 
 router.post(

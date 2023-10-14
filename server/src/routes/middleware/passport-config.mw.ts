@@ -11,8 +11,9 @@ passport.use(
       usernameField: 'email',
     },
     (email, password, done) => {
-      const sqlQuery = `SELECT * FROM users WHERE email = "${email}"`;
       const db = mysql.createConnection(dbConfig);
+      let sqlQuery = 'SELECT * FROM users WHERE email = ?';
+      sqlQuery = mysql.format(sqlQuery, [email]);
 
       db.query(sqlQuery, async (error, [user]: [DatabaseUser]) => {
         try {
@@ -32,8 +33,9 @@ passport.use(
 passport.serializeUser((user: DatabaseUser, done) => done(null, user.id));
 
 passport.deserializeUser((id: number, done) => {
-  const sqlQuery = `SELECT * FROM users WHERE id = "${id}"`;
   const db = mysql.createConnection(dbConfig);
+  let sqlQuery = 'SELECT * FROM users WHERE id = ?';
+  sqlQuery = mysql.format(sqlQuery, [id]);
 
   db.query(sqlQuery, (error, [user]: [DatabaseUser]) => {
     if (error) {
@@ -41,4 +43,5 @@ passport.deserializeUser((id: number, done) => {
     }
     return done(null, user);
   });
+  db.end();
 });

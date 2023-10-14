@@ -91,7 +91,7 @@ export default function UserAccount() {
       });
 
       if (updateAccountRequest.ok) {
-        setSuccessMessage('Success');
+        setSuccessMessage('Account Updated Successfully');
       } else {
         const error: Error = await updateAccountRequest.json();
         throw new Error(error.message);

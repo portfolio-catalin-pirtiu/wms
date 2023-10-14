@@ -3,12 +3,38 @@ import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { object, string } from 'yup';
-import { Formik, FormikValues } from 'formik';
+import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import Message from '../../../../components/Message/Message';
 import { IDatabaseUser } from '@features/userAccount';
 import { serverBaseUrl } from '../../../../data/constants';
+import { CommunicationContext } from '../../../../context/CommunicationsProvider';
+
+class User implements IDatabaseUser {
+  id?: number | undefined;
+  name: string;
+  email: string;
+  password: string;
+  address1?: string | undefined;
+  address2?: string | undefined;
+  city?: string | undefined;
+  county?: string | undefined;
+  country?: string | undefined;
+  postcode?: string | undefined;
+  constructor(props: IDatabaseUser) {
+    this.id = props.id;
+    this.name = props.name;
+    this.email = props.email;
+    this.password = props.password;
+    this.address1 = props.address1;
+    this.address2 = props.address2;
+    this.city = props.city;
+    this.county = props.county;
+    this.country = props.country;
+    this.postcode = props.postcode;
+  }
+}
 
 const userSchema = object().shape({
   name: string().required('Required'),
@@ -24,7 +50,8 @@ const userSchema = object().shape({
 
 export default function SignUpWithEmail() {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState('');
+  const { successMessage, setSuccessMessage, errorMessage, setErrorMessage } =
+    useContext(CommunicationContext);
   const initialFormValues = useRef({
     name: '',
     email: '',
@@ -47,7 +74,7 @@ export default function SignUpWithEmail() {
     if ('name' in localStorageSignUpFormData) {
       initialFormValues.current = Object.assign({}, localStorageSignUpFormData);
     }
-  }, [errorMessage]);
+  }, []);
 
   function getFromLocalStorage(key: string): IDatabaseUser {
     const localStorageData = localStorage.getItem(key);
@@ -69,37 +96,38 @@ export default function SignUpWithEmail() {
     } as IDatabaseUser;
   }
 
-  function submitForm(values: FormikValues) {
+  async function handleAddNewUser(formValues: IDatabaseUser) {
+    const newUser = new User(formValues);
     const newUserToApi = new URL('authentication/users', serverBaseUrl);
-    fetch(newUserToApi, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(values),
-    })
-      .then((response) => {
-        if (response.ok) {
-          localStorage.removeItem(localStorageSignUpFormKey);
-          navigate('/authentication');
-        } else {
-          throw new Error(response.statusText);
-        }
-      })
-      .catch((error) => {
-        localStorage.setItem(localStorageSignUpFormKey, JSON.stringify(values));
-        if (error instanceof Error) {
-          setErrorMessage(error.message);
-        } else if (typeof error === 'string') {
-          setErrorMessage(error);
-        }
+    try {
+      const newUserRequest = await fetch(newUserToApi, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser),
       });
+
+      if (newUserRequest.ok) {
+        localStorage.removeItem(localStorageSignUpFormKey);
+        setSuccessMessage(`Welcome to the Family, ${newUser.name}`);
+        setTimeout(() => {
+          navigate('/authentication');
+        }, 4000);
+      } else {
+        const error: string = await newUserRequest.json();
+        throw new Error(error);
+      }
+    } catch (e) {
+      localStorage.setItem(localStorageSignUpFormKey, JSON.stringify(newUser));
+      if (e instanceof Error) setErrorMessage(e.message);
+    }
   }
 
   let formContent = (
     <Formik
       validationSchema={userSchema}
-      onSubmit={submitForm}
+      onSubmit={handleAddNewUser}
       initialValues={initialFormValues.current}
     >
       {({ handleSubmit, handleChange, values, touched, errors }) => (
@@ -250,12 +278,10 @@ export default function SignUpWithEmail() {
     </Formik>
   );
 
-  return !!errorMessage ? (
-    <>
-      <Message error={errorMessage} />
+  return (
+    <Container>
+      <Message success={successMessage} error={errorMessage} />
       {formContent}
-    </>
-  ) : (
-    <>{formContent}</>
+    </Container>
   );
 }

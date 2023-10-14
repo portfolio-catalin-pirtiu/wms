@@ -33,9 +33,10 @@ router.post('/delete', (req: ReqUser, res: Response) => {
     }
   });
 
+  const db = mysql.createConnection(dbConfig);
   if (typeof userId === 'number') {
-    const sqlQuery = `DELETE FROM users WHERE id = ${userId}`;
-    const db = mysql.createConnection(dbConfig);
+    let sqlQuery = 'DELETE FROM users WHERE id = ?';
+    sqlQuery = mysql.format(sqlQuery, [userId]);
     db.query(sqlQuery, (error) => {
       if (error) {
         res.status(404).json({ message: 'Delete Account Unsuccessful' });
@@ -46,17 +47,17 @@ router.post('/delete', (req: ReqUser, res: Response) => {
   } else {
     res.status(404).json({ message: 'Invalid User ID' });
   }
+  db.end();
 });
 
 router.post('/passwordChange', async (req: ReqUser, res: Response) => {
   const userId = req.user?.id;
-  const { oldPassword, newPassword } = req.body as PasswordChange;
   const db = mysql.createPool(dbConfig);
 
   async function selectPassword(): Promise<string> {
-    let selectPasswordQuery: string;
+    let selectPasswordQuery = 'SELECT password FROM users WHERE id = ?';
     if (typeof userId === 'number') {
-      selectPasswordQuery = `SELECT password FROM users WHERE id = ${userId}`;
+      selectPasswordQuery = mysql.format(selectPasswordQuery, [userId]);
     }
 
     return new Promise((resolve, reject) => {
@@ -77,9 +78,10 @@ router.post('/passwordChange', async (req: ReqUser, res: Response) => {
   }
 
   async function updatePassword(newHashedPassword: string): Promise<boolean> {
-    let changePasswordQuery: string;
+    let changePasswordQuery = 'UPDATE users SET password = ? WHERE id = ?';
+    const values = [newHashedPassword, userId];
     if (typeof userId === 'number') {
-      changePasswordQuery = `UPDATE users SET password = "${newHashedPassword}" WHERE id = ${userId}`;
+      changePasswordQuery = mysql.format(changePasswordQuery, values);
     }
 
     return new Promise((resolve, reject) => {
@@ -93,6 +95,7 @@ router.post('/passwordChange', async (req: ReqUser, res: Response) => {
   }
 
   try {
+    const { oldPassword, newPassword } = req.body as PasswordChange;
     const password = await selectPassword();
     const match = await comparePasswords({
       oldPassword,
@@ -105,6 +108,7 @@ router.post('/passwordChange', async (req: ReqUser, res: Response) => {
 
       if (isPasswordUpdated) {
         res.sendStatus(201);
+        db.end();
       }
     } else {
       throw new Error('Passwords do not match');
@@ -123,18 +127,20 @@ router.post('/updateAccount', async (req: ReqUser, res: Response) => {
   const db = mysql.createPool(dbConfig);
 
   async function updateAccount(): Promise<boolean> {
-    let sqlQuery: string;
-    if (
-      typeof userId === 'number' &&
-      typeof address1 === 'string' &&
-      typeof address2 === 'string' &&
-      typeof city === 'string' &&
-      typeof county === 'string' &&
-      typeof country === 'string' &&
-      typeof postcode === 'string'
-    ) {
-      sqlQuery = `UPDATE users SET address1 = "${address1}", address2 = "${address2}", city = "${city}", county = "${county}", country = "${country}", postcode = "${postcode}" WHERE id = ${userId}`;
-    }
+    let sqlQuery = `UPDATE users SET 
+      address1 = ?, address2 = ?, city = ?, county = ?, country = ?, postcode = ? 
+      WHERE id = ?`;
+    const values = [
+      address1,
+      address2,
+      city,
+      county,
+      country,
+      postcode,
+      userId,
+    ];
+    sqlQuery = mysql.format(sqlQuery, values);
+
     return new Promise((resolve, reject) => {
       db.query(sqlQuery, (error) => {
         if (error) {
@@ -149,6 +155,7 @@ router.post('/updateAccount', async (req: ReqUser, res: Response) => {
     const accountIsUpdated = await updateAccount();
     if (accountIsUpdated) {
       res.sendStatus(200);
+      db.end();
     } else {
       res.status(404).json({ message: 'Unable to update account' });
     }
