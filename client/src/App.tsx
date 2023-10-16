@@ -6,6 +6,7 @@ import NavPublic from './components/NavBar/NavPublic';
 import NavRoutes from './components/NavBar/NavRoutes';
 import Message from './components/Message/Message';
 import { AuthenticationContext } from './context/AuthenticationProvider';
+import { CommunicationContext } from './context/CommunicationsProvider';
 import { ILoggedInUser } from '@features/userAccount';
 import { serverBaseUrl } from './data/constants';
 
@@ -20,8 +21,8 @@ class Warning {
 }
 function App() {
   const { user, setUser } = useContext(AuthenticationContext);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [warningMessage, setWarningMessage] = useState('');
+  const { errorMessage, setErrorMessage, warningMessage, setWarningMessage } =
+    useContext(CommunicationContext);
   const [loggedInUserFetchCount, setLoggedInUserFetchCount] = useState(0);
   const navigate = useNavigate();
 
@@ -49,19 +50,21 @@ function App() {
         navigate('/authentication/login');
         throw new Warning('Session Expired - you have been logged out');
       }
-    } catch (exception) {
-      if (exception instanceof Error) {
-        setErrorMessage(exception.message);
-      } else if (exception instanceof Warning) {
+    } catch (e) {
+      if (e instanceof Error) {
+        setErrorMessage(e.message);
+      } else if (e instanceof Warning) {
         setWarningMessage('Logged Out');
-      } else if (typeof exception === 'string') {
-        setErrorMessage(exception);
+      } else if (typeof e === 'string') {
+        setErrorMessage(e);
       }
     } finally {
-      setErrorMessage('');
-      setWarningMessage('');
+      setTimeout(() => {
+        setErrorMessage('');
+        setWarningMessage('');
+      }, 2000);
     }
-  }, [user.isLoggedIn, setUser, navigate]);
+  }, [user.isLoggedIn, setUser, navigate, setErrorMessage, setWarningMessage]);
 
   useEffect(() => {
     const timeOutId = setTimeout(() => {

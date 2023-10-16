@@ -57,14 +57,14 @@ export default function Message({
   );
 
   const successTemplate = (
-    <Alert show={isSuccess} variant='success'>
+    <Alert show={isSuccess} variant="success">
       <Alert.Heading>Success</Alert.Heading>
       <p>{success}</p>
     </Alert>
   );
 
   const warningTemplate = (
-    <Alert show={isWarning} variant='warning'>
+    <Alert show={isWarning} variant="warning">
       <Alert.Heading>Warning</Alert.Heading>
       <p>{warning}</p>
     </Alert>

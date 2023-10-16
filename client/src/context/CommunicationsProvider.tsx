@@ -9,6 +9,8 @@ interface CommunicationContextValue {
   setSuccessMessage: Dispatch<SetStateAction<string>>;
   errorMessage: string;
   setErrorMessage: Dispatch<SetStateAction<string>>;
+  warningMessage: string;
+  setWarningMessage: Dispatch<SetStateAction<string>>;
 }
 
 const communicationCtxDefaultValue: CommunicationContextValue = {
@@ -16,6 +18,8 @@ const communicationCtxDefaultValue: CommunicationContextValue = {
   setSuccessMessage: (successMessage) => {},
   errorMessage: '',
   setErrorMessage: (errorMessage) => {},
+  warningMessage: '',
+  setWarningMessage: (warningMessage) => {},
 };
 
 export const CommunicationContext = createContext(communicationCtxDefaultValue);
@@ -27,6 +31,9 @@ export function CommunicationProvider(props: IProviderProps) {
   const [errorMessage, setErrorMessage] = useState<string>(
     communicationCtxDefaultValue.errorMessage,
   );
+  const [warningMessage, setWarningMessage] = useState<string>(
+    communicationCtxDefaultValue.warningMessage,
+  );
 
   return (
     <CommunicationContext.Provider
@@ -35,6 +42,8 @@ export function CommunicationProvider(props: IProviderProps) {
         setSuccessMessage,
         errorMessage,
         setErrorMessage,
+        warningMessage,
+        setWarningMessage,
       }}
     >
       {props.children}
