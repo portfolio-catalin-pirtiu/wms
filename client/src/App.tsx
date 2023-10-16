@@ -10,11 +10,12 @@ import { CommunicationContext } from './context/CommunicationsProvider';
 import { ILoggedInUser } from '@features/userAccount';
 import { serverBaseUrl } from './data/constants';
 
-interface Warning {
+interface IWarning {
   message: string;
 }
 
-class Warning {
+class Warning implements IWarning {
+  message: string;
   constructor(message: string) {
     this.message = message;
   }
@@ -78,15 +79,9 @@ function App() {
     fetchUserLoginDetails();
   }, [loggedInUserFetchCount, fetchUserLoginDetails]);
 
-  return user.isLoggedIn ? (
+  return (
     <>
-      <NavPrivate />
-      <NavRoutes />
-      <Message error={errorMessage} warning={warningMessage} />
-    </>
-  ) : (
-    <>
-      <NavPublic />
+      {user.isLoggedIn ? <NavPrivate /> : <NavPublic />}
       <NavRoutes />
       <Message error={errorMessage} warning={warningMessage} />
     </>
