@@ -47,13 +47,13 @@ function App() {
         setUser(noUser);
         localStorage.removeItem('loggedInUser');
         navigate('/authentication/login');
-        throw new Warning('session expired - you have been logged out');
+        throw new Warning('Session Expired - you have been logged out');
       }
     } catch (exception) {
       if (exception instanceof Error) {
         setErrorMessage(exception.message);
       } else if (exception instanceof Warning) {
-        setWarningMessage('logged out');
+        setWarningMessage('Logged Out');
       } else if (typeof exception === 'string') {
         setErrorMessage(exception);
       }

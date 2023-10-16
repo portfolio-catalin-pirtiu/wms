@@ -36,10 +36,15 @@ export default function Logout() {
           }, 2000);
           throw new Error('Logout Unsuccessful');
         }
-      } catch (exception) {
-        if (exception instanceof Error) {
-          setErrorMessage(exception.message);
+      } catch (e) {
+        if (e instanceof Error) {
+          setErrorMessage(e.message);
         }
+      } finally {
+        setTimeout(() => {
+          setSuccessMessage('');
+          setErrorMessage('');
+        }, 2000);
       }
     }
     logoutUser();
