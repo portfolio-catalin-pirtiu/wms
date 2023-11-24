@@ -10,4 +10,9 @@ router.get('/', (req: ReqUser, res: express.Response) => {
     email: req.user?.email,
   });
 });
+
+router.get('/test', (req, res) => {
+  console.log('dashboard test');
+  res.status(200).json('test successful');
+});
 export default router;

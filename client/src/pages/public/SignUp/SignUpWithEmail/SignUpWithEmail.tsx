@@ -6,7 +6,6 @@ import { object, string } from 'yup';
 import { Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useContext } from 'react';
-import Message from '../../../../components/Message/Message';
 import { IDatabaseUser } from '@features/userAccount';
 import { serverBaseUrl } from '../../../../data/constants';
 import { CommunicationContext } from '../../../../context/CommunicationsProvider';
@@ -50,7 +49,7 @@ const userSchema = object().shape({
 
 export default function SignUpWithEmail() {
   const navigate = useNavigate();
-  const { successMessage, setSuccessMessage, errorMessage, setErrorMessage } =
+  const { setSuccessMessage, setErrorMessage } =
     useContext(CommunicationContext);
   const initialFormValues = useRef({
     name: '',
@@ -124,164 +123,161 @@ export default function SignUpWithEmail() {
     }
   }
 
-  let formContent = (
-    <Formik
-      validationSchema={userSchema}
-      onSubmit={handleAddNewUser}
-      initialValues={initialFormValues.current}
-    >
-      {({ handleSubmit, handleChange, values, touched, errors }) => (
-        <Container className="my-5">
-          <h1>Sign up With Email</h1>
-          <Container className="my-5">
-            <Form noValidate onSubmit={handleSubmit}>
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="organization-name">
-                  Organization Name
-                </InputGroup.Text>
-                <Form.Control
-                  name="name"
-                  type="text"
-                  autoComplete="on"
-                  value={values.name}
-                  onChange={handleChange}
-                  isValid={touched.name && !errors.name}
-                  isInvalid={!!errors.name}
-                  placeholder="Required"
-                  aria-label="Required"
-                  aria-describedby="organization-name"
-                />
-                <Form.Control.Feedback type={errors.name ? 'invalid' : 'valid'}>
-                  {errors.name ? errors.name : 'Looks Good!'}
-                </Form.Control.Feedback>
-              </InputGroup>
-
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="email">Email Address</InputGroup.Text>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  autoComplete="email"
-                  placeholder="Required"
-                  aria-label="Required"
-                  aria-describedby="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  isValid={touched.email && !errors.email}
-                  isInvalid={!!errors.email}
-                />
-                <Form.Control.Feedback
-                  type={errors.email ? 'invalid' : 'valid'}
-                >
-                  {errors.email ? errors.email : 'Looks Good!'}
-                </Form.Control.Feedback>
-              </InputGroup>
-
-              <InputGroup className="mb-3">
-                <InputGroup.Text id="password">Password</InputGroup.Text>
-                <Form.Control
-                  type="password"
-                  name="password"
-                  autoComplete="password"
-                  placeholder="Required"
-                  aria-label="Required"
-                  aria-describedby="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  isValid={touched.password && !errors.password}
-                  isInvalid={!!errors.password}
-                />
-                <Form.Control.Feedback
-                  type={errors.password ? 'invalid' : 'valid'}
-                >
-                  {errors.password ? errors.password : 'Looks good!'}
-                </Form.Control.Feedback>
-              </InputGroup>
-
-              <Container className="my-5">
-                <Form.Text>Optional Fields</Form.Text>
-                <hr />
-                <Form.Group className="mb-3" controlId="basicFormAddress1">
-                  <Form.Control
-                    type="address"
-                    name="address1"
-                    autoComplete="on"
-                    value={values.address1}
-                    placeholder="Address 1"
-                    onChange={handleChange}
-                  ></Form.Control>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="basicFormAddress2">
-                  <Form.Control
-                    type="text"
-                    name="address2"
-                    autoComplete="on"
-                    value={values.address2}
-                    placeholder="Address 2"
-                    onChange={handleChange}
-                  ></Form.Control>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="basicFormCity">
-                  <Form.Control
-                    type="text"
-                    name="city"
-                    autoComplete="on"
-                    placeholder="City"
-                    value={values.city}
-                    onChange={handleChange}
-                  ></Form.Control>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="basicFormCounty">
-                  <Form.Control
-                    type="text"
-                    name="county"
-                    autoComplete="on"
-                    placeholder="County"
-                    value={values.county}
-                    onChange={handleChange}
-                  ></Form.Control>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="basicFormCountry">
-                  <Form.Control
-                    type="text"
-                    name="country"
-                    autoComplete="country-name"
-                    placeholder="Country"
-                    value={values.country}
-                    onChange={handleChange}
-                  ></Form.Control>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="basicFormPostcode">
-                  <Form.Control
-                    type="text"
-                    name="postcode"
-                    autoComplete="postal-code"
-                    placeholder="Postcode"
-                    value={values.postcode}
-                    onChange={handleChange}
-                  ></Form.Control>
-                </Form.Group>
-
-                <Button type="submit" variant="primary">
-                  Sign Up
-                </Button>
-              </Container>
-            </Form>
-          </Container>
-        </Container>
-      )}
-    </Formik>
-  );
-
   return (
     <Container>
-      <Message success={successMessage} error={errorMessage} />
-      {formContent}
+      <Formik
+        validationSchema={userSchema}
+        onSubmit={handleAddNewUser}
+        initialValues={initialFormValues.current}
+      >
+        {({ handleSubmit, handleChange, values, touched, errors }) => (
+          <Container className="my-5">
+            <h1>Sign up With Email</h1>
+            <Container className="my-5">
+              <Form noValidate onSubmit={handleSubmit}>
+                <InputGroup className="mb-3">
+                  <InputGroup.Text id="organization-name">
+                    Organization Name
+                  </InputGroup.Text>
+                  <Form.Control
+                    name="name"
+                    type="text"
+                    autoComplete="on"
+                    value={values.name}
+                    onChange={handleChange}
+                    isValid={touched.name && !errors.name}
+                    isInvalid={!!errors.name}
+                    placeholder="Required"
+                    aria-label="Required"
+                    aria-describedby="organization-name"
+                  />
+                  <Form.Control.Feedback
+                    type={errors.name ? 'invalid' : 'valid'}
+                  >
+                    {errors.name ? errors.name : 'Looks Good!'}
+                  </Form.Control.Feedback>
+                </InputGroup>
+
+                <InputGroup className="mb-3">
+                  <InputGroup.Text id="email">Email Address</InputGroup.Text>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    placeholder="Required"
+                    aria-label="Required"
+                    aria-describedby="email"
+                    value={values.email}
+                    onChange={handleChange}
+                    isValid={touched.email && !errors.email}
+                    isInvalid={!!errors.email}
+                  />
+                  <Form.Control.Feedback
+                    type={errors.email ? 'invalid' : 'valid'}
+                  >
+                    {errors.email ? errors.email : 'Looks Good!'}
+                  </Form.Control.Feedback>
+                </InputGroup>
+
+                <InputGroup className="mb-3">
+                  <InputGroup.Text id="password">Password</InputGroup.Text>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    autoComplete="password"
+                    placeholder="Required"
+                    aria-label="Required"
+                    aria-describedby="password"
+                    value={values.password}
+                    onChange={handleChange}
+                    isValid={touched.password && !errors.password}
+                    isInvalid={!!errors.password}
+                  />
+                  <Form.Control.Feedback
+                    type={errors.password ? 'invalid' : 'valid'}
+                  >
+                    {errors.password ? errors.password : 'Looks good!'}
+                  </Form.Control.Feedback>
+                </InputGroup>
+
+                <Container className="my-5">
+                  <Form.Text>Optional Fields</Form.Text>
+                  <hr />
+                  <Form.Group className="mb-3" controlId="basicFormAddress1">
+                    <Form.Control
+                      type="address"
+                      name="address1"
+                      autoComplete="on"
+                      value={values.address1}
+                      placeholder="Address 1"
+                      onChange={handleChange}
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="basicFormAddress2">
+                    <Form.Control
+                      type="text"
+                      name="address2"
+                      autoComplete="on"
+                      value={values.address2}
+                      placeholder="Address 2"
+                      onChange={handleChange}
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="basicFormCity">
+                    <Form.Control
+                      type="text"
+                      name="city"
+                      autoComplete="on"
+                      placeholder="City"
+                      value={values.city}
+                      onChange={handleChange}
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="basicFormCounty">
+                    <Form.Control
+                      type="text"
+                      name="county"
+                      autoComplete="on"
+                      placeholder="County"
+                      value={values.county}
+                      onChange={handleChange}
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="basicFormCountry">
+                    <Form.Control
+                      type="text"
+                      name="country"
+                      autoComplete="country-name"
+                      placeholder="Country"
+                      value={values.country}
+                      onChange={handleChange}
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="basicFormPostcode">
+                    <Form.Control
+                      type="text"
+                      name="postcode"
+                      autoComplete="postal-code"
+                      placeholder="Postcode"
+                      value={values.postcode}
+                      onChange={handleChange}
+                    ></Form.Control>
+                  </Form.Group>
+
+                  <Button type="submit" variant="primary">
+                    Sign Up
+                  </Button>
+                </Container>
+              </Form>
+            </Container>
+          </Container>
+        )}
+      </Formik>
     </Container>
   );
 }

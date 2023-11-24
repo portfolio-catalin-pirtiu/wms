@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { AuthenticationContext } from '../../../../context/AuthenticationProvider';
 import { CommunicationContext } from '../../../../context/CommunicationsProvider';
 import { ILoggedInUser } from '@features/userAccount';
-import Message from '../../../../components/Message/Message';
 import { serverBaseUrl } from '../../../../data/constants';
 
 export default function Logout() {
   const navigate = useNavigate();
-  const { successMessage, setSuccessMessage, errorMessage, setErrorMessage } =
+  const { setSuccessMessage, setErrorMessage } =
     useContext(CommunicationContext);
   const { setUser } = useContext(AuthenticationContext);
 
@@ -40,19 +39,10 @@ export default function Logout() {
         if (e instanceof Error) {
           setErrorMessage(e.message);
         }
-      } finally {
-        setTimeout(() => {
-          setSuccessMessage('');
-          setErrorMessage('');
-        }, 2000);
       }
     }
     logoutUser();
   }, [navigate, setUser, setErrorMessage, setSuccessMessage]);
 
-  return (
-    <>
-      <Message success={successMessage} error={errorMessage} />
-    </>
-  );
+  return <></>;
 }

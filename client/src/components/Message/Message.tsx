@@ -14,8 +14,8 @@ export default function Message({
   warning,
 }: CommunicationMessage) {
   const [isError, setIsError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(success ? true : false);
-  const [isWarning, setIsWarning] = useState(warning ? true : false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isWarning, setIsWarning] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -71,10 +71,10 @@ export default function Message({
   );
 
   return (
-    <h6>
-      {isError && errorTemplate}
-      {isSuccess && successTemplate}
-      {isWarning && warningTemplate}
+    <h6 role="alert">
+      {successTemplate}
+      {warningTemplate}
+      {errorTemplate}
     </h6>
   );
 }

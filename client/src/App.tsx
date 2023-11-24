@@ -22,8 +22,13 @@ class Warning implements IWarning {
 }
 function App() {
   const { user, setUser } = useContext(AuthenticationContext);
-  const { errorMessage, setErrorMessage, warningMessage, setWarningMessage } =
-    useContext(CommunicationContext);
+  const {
+    successMessage,
+    errorMessage,
+    setErrorMessage,
+    warningMessage,
+    setWarningMessage,
+  } = useContext(CommunicationContext);
   const [loggedInUserFetchCount, setLoggedInUserFetchCount] = useState(0);
   const navigate = useNavigate();
 
@@ -59,11 +64,6 @@ function App() {
       } else if (typeof e === 'string') {
         setErrorMessage(e);
       }
-    } finally {
-      setTimeout(() => {
-        setErrorMessage('');
-        setWarningMessage('');
-      }, 2000);
     }
   }, [user.isLoggedIn, setUser, navigate, setErrorMessage, setWarningMessage]);
 
@@ -82,8 +82,12 @@ function App() {
   return (
     <>
       {user.isLoggedIn ? <NavPrivate /> : <NavPublic />}
+      <Message
+        success={successMessage}
+        error={errorMessage}
+        warning={warningMessage}
+      />
       <NavRoutes />
-      <Message error={errorMessage} warning={warningMessage} />
     </>
   );
 }

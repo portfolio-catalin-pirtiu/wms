@@ -1,7 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { ResponseStatus } from '../../../types';
 import { IDatabaseUser, ILoggedInUser } from '@features/userAccount';
-import Message from '../../../components/Message/Message';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
@@ -40,7 +39,7 @@ export default function UserAccount() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const { setUser } = useContext(AuthenticationContext);
-  const { successMessage, setSuccessMessage, errorMessage, setErrorMessage } =
+  const { setSuccessMessage, setErrorMessage } =
     useContext(CommunicationContext);
 
   useEffect(() => {
@@ -161,13 +160,6 @@ export default function UserAccount() {
   function clearLocalStorage() {
     localStorage.clear();
   }
-
-  const commonContent = (
-    <>
-      <h1>User Account</h1>
-      <Message error={errorMessage} success={successMessage} />
-    </>
-  );
 
   const notEditContent = (
     <Container>
@@ -343,15 +335,10 @@ export default function UserAccount() {
     </Formik>
   );
 
-  return isEditing ? (
+  return (
     <>
-      {commonContent}
-      {editContent}
-    </>
-  ) : (
-    <>
-      {commonContent}
-      {notEditContent}
+      <h1>User Account</h1>
+      {isEditing ? editContent : notEditContent}
     </>
   );
 }
